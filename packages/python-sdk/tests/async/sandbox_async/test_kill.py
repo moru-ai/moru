@@ -1,6 +1,6 @@
 import pytest
 
-from e2b import AsyncSandbox, SandboxQuery, SandboxState
+from moru import AsyncSandbox, SandboxQuery, SandboxState
 
 
 @pytest.mark.skip_debug()

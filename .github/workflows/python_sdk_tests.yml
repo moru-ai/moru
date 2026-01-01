@@ -3,7 +3,7 @@ name: Test Python SDK
 on:
   workflow_call:
     secrets:
-      E2B_API_KEY:
+      MORU_API_KEY:
         required: true
   pull_request:
     branches:
@@ -57,4 +57,4 @@ jobs:
       - name: Run tests
         run: poetry run pytest --verbose --numprocesses=4
         env:
-          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+          MORU_API_KEY: ${{ secrets.MORU_API_KEY }}

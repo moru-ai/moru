@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 
 /**
- * User configuration stored in ~/.e2b/config.json
+ * User configuration stored in ~/.moru/config.json
  */
 export interface UserConfig {
   email: string
@@ -14,10 +14,10 @@ export interface UserConfig {
   dockerProxySet?: boolean
 }
 
-export const USER_CONFIG_PATH = path.join(os.homedir(), '.e2b', 'config.json') // TODO: Keep in Keychain
+export const USER_CONFIG_PATH = path.join(os.homedir(), '.moru', 'config.json') // TODO: Keep in Keychain
 export const DOCS_BASE =
-  process.env.E2B_DOCS_BASE ||
-  `https://${process.env.E2B_DOMAIN || 'e2b.dev'}/docs`
+  process.env.MORU_DOCS_BASE ||
+  `https://${process.env.MORU_DOMAIN || 'moru.io'}/docs`
 
 export function getUserConfig(): UserConfig | null {
   if (!fs.existsSync(USER_CONFIG_PATH)) return null

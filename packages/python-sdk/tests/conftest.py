@@ -7,7 +7,7 @@ from uuid import uuid4
 import pytest
 import pytest_asyncio
 
-from e2b import (
+from moru import (
     AsyncCommandHandle,
     AsyncSandbox,
     AsyncTemplate,
@@ -34,7 +34,7 @@ def template():
 def sandbox_factory(request, template, sandbox_test_id):
     def factory(*, template_name: str = template, **kwargs):
         kwargs.setdefault("secure", False)
-        kwargs.setdefault("timeout", 5)
+        kwargs.setdefault("timeout", 60)
 
         metadata = kwargs.setdefault("metadata", dict())
         metadata.setdefault("sandbox_test_id", sandbox_test_id)
@@ -68,7 +68,7 @@ def event_loop():
 @pytest.fixture
 def async_sandbox_factory(request, template, sandbox_test_id, event_loop):
     async def factory(*, template_name: str = template, **kwargs):
-        kwargs.setdefault("timeout", 5)
+        kwargs.setdefault("timeout", 60)
 
         metadata = kwargs.setdefault("metadata", dict())
         metadata.setdefault("sandbox_test_id", sandbox_test_id)
@@ -103,7 +103,7 @@ def build():
     ):
         return Template.build(
             template,
-            alias=alias or f"e2b-test-{uuid4()}",
+            alias=alias or f"moru-test-{uuid4()}",
             cpu_count=1,
             memory_mb=1024,
             skip_cache=skip_cache,
@@ -123,7 +123,7 @@ def async_build():
     ):
         return await AsyncTemplate.build(
             template,
-            alias=alias or f"e2b-test-{uuid4()}",
+            alias=alias or f"moru-test-{uuid4()}",
             cpu_count=1,
             memory_mb=1024,
             skip_cache=skip_cache,
@@ -135,14 +135,14 @@ def async_build():
 
 @pytest.fixture
 def debug():
-    return os.getenv("E2B_DEBUG") is not None
+    return os.getenv("MORU_DEBUG") is not None
 
 
 @pytest.fixture(autouse=True)
 def skip_by_debug(request, debug):
     if request.node.get_closest_marker("skip_debug"):
         if debug:
-            pytest.skip("skipped because E2B_DEBUG is set")
+            pytest.skip("skipped because MORU_DEBUG is set")
 
 
 class Helpers:

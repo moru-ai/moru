@@ -1,3 +1,3 @@
-# Releasing e2b cli
+# Releasing Moru CLI
 
 to create a changeset run `npx changeset`

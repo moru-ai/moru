@@ -1,6 +1,6 @@
 import uuid
 
-from e2b import Sandbox, FileType
+from moru import Sandbox, FileType
 
 
 def test_list_directory(sandbox: Sandbox):

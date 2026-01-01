@@ -42,7 +42,7 @@ export interface SandboxUrlOpts {
 }
 
 /**
- * E2B cloud sandbox is a secure and isolated cloud environment.
+ * Moru cloud sandbox is a secure and isolated cloud environment.
  *
  * The sandbox allows you to:
  * - Access Linux OS
@@ -51,13 +51,11 @@ export interface SandboxUrlOpts {
  * - Run isolated code
  * - Access the internet
  *
- * Check docs [here](https://e2b.dev/docs).
- *
  * Use {@link Sandbox.create} to create a new sandbox.
  *
  * @example
  * ```ts
- * import { Sandbox } from 'e2b'
+ * import { Sandbox } from 'moru'
  *
  * const sandbox = await Sandbox.create()
  * ```
@@ -136,8 +134,8 @@ export class Sandbox extends SandboxApi {
     })
 
     const sandboxHeaders = {
-      'E2b-Sandbox-Id': this.sandboxId,
-      'E2b-Sandbox-Port': this.envdPort.toString(),
+      'Moru-Sandbox-Id': this.sandboxId,
+      'Moru-Sandbox-Port': this.envdPort.toString(),
     }
 
     const rpcTransport = createConnectTransport({
@@ -148,7 +146,7 @@ export class Sandbox extends SandboxApi {
         // Patch fetch to always use redirect: "follow"
         // connect-web doesn't allow to configure redirect option - https://github.com/connectrpc/connect-es/pull/1082
         // connect-web package uses redirect: "error" which is not supported in edge runtimes
-        // E2B endpoints should be safe to use with redirect: "follow" https://github.com/e2b-dev/E2B/issues/531#issuecomment-2779492867
+        // Moru endpoints should be safe to use with redirect: "follow"
 
         const headers = new Headers(this.connectionConfig.headers)
         new Headers(options?.headers).forEach((value, key) =>
@@ -726,7 +724,7 @@ export class Sandbox extends SandboxApi {
       if (compareVersions(this.envdApi.version, '0.1.5') < 0) {
         throw new SandboxError(
           'You need to update the template to use the new SDK. ' +
-            'You can do this by running `e2b template build` in the directory with the template.'
+            'You can do this by running `moru template build` in the directory with the template.'
         )
       }
 

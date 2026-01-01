@@ -308,7 +308,7 @@ func generate(gen *Plugin, file *descriptor.FileDescriptorProto) {
 	print(b, "from httpcore import ConnectionPool, AsyncConnectionPool")
 	print(b, "")
 
-	print(b, "import e2b_connect as connect")
+	print(b, "import moru_connect as connect")
 	if len(deps) > 0 {
 		print(b, "")
 		for _, dep := range deps {

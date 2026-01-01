@@ -1,4 +1,4 @@
-from e2b import AsyncTemplate
+from moru import AsyncTemplate
 
 template = (
     AsyncTemplate()

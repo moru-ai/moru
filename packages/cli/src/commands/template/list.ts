@@ -1,12 +1,12 @@
 import * as tablePrinter from 'console-table-printer'
 import * as commander from 'commander'
-import * as e2b from 'e2b'
+import * as moru from '@moru-ai/core'
 
 import { listAliases } from '../../utils/format'
 import { sortTemplatesAliases } from 'src/utils/templateSort'
 import { client, ensureAccessToken } from 'src/api'
 import { teamOption } from '../../options'
-import { handleE2BRequestError } from '../../utils/errors'
+import { handleMoruRequestError } from '../../utils/errors'
 import { getUserConfig } from '../../user'
 
 export const listCommand = new commander.Command('list')
@@ -43,7 +43,7 @@ export const listCommand = new commander.Command('list')
     }
   })
 
-function renderTable(templates: e2b.components['schemas']['Template'][]) {
+function renderTable(templates: moru.components['schemas']['Template'][]) {
   if (!templates?.length) {
     console.log('No templates found.')
     return
@@ -117,13 +117,13 @@ export async function listSandboxTemplates({
   teamID,
 }: {
   teamID?: string
-}): Promise<e2b.components['schemas']['Template'][]> {
+}): Promise<moru.components['schemas']['Template'][]> {
   const templates = await client.api.GET('/templates', {
     params: {
       query: { teamID },
     },
   })
 
-  handleE2BRequestError(templates, 'Error getting templates')
+  handleMoruRequestError(templates, 'Error getting templates')
   return templates.data
 }

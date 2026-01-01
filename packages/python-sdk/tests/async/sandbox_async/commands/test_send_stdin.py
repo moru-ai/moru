@@ -1,6 +1,6 @@
 import asyncio
 
-from e2b import AsyncSandbox
+from moru import AsyncSandbox
 
 
 async def test_send_stdin_to_process(async_sandbox: AsyncSandbox):

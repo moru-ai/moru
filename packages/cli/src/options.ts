@@ -10,9 +10,9 @@ export const pathOption = new commander.Option(
 )
 
 export const configOption = new commander.Option(
-  '--config <e2b-toml>',
-  `specify path to the E2B config toml. By default E2B tries to find ${asBold(
-    './e2b.toml'
+  '--config <moru-toml>',
+  `specify path to the Moru config toml. By default Moru tries to find ${asBold(
+    './moru.toml'
   )} in root directory.`
 )
 
@@ -28,5 +28,5 @@ export const selectMultipleOption = new commander.Option(
 
 export const teamOption = new commander.Option(
   '-t, --team <team-id>',
-  'specify the team ID that the operation will be associated with. You can find team ID in the team settings in the E2B dashboard (https://e2b.dev/dashboard?tab=team).'
+  'specify the team ID that the operation will be associated with. You can find team ID in the team settings in the Moru dashboard (https://dashboard.moru.io).'
 )

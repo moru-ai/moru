@@ -1,6 +1,6 @@
 import pytest
 
-from e2b import Template
+from moru import Template
 
 
 @pytest.mark.skip_debug()

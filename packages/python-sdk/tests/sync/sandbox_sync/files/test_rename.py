@@ -1,5 +1,5 @@
 import pytest
-from e2b import NotFoundException, Sandbox
+from moru import NotFoundException, Sandbox
 
 
 def test_rename_file(sandbox: Sandbox):

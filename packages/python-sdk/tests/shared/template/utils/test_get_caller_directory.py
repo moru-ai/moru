@@ -1,5 +1,5 @@
 import os
-from e2b.template.utils import get_caller_directory
+from moru.template.utils import get_caller_directory
 
 
 def test_get_caller_directory():

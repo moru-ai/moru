@@ -8,11 +8,11 @@ import { authCommand } from './auth'
 export const program = new commander.Command()
   .description(
     `Create sandbox templates from Dockerfiles by running ${asPrimary(
-      'e2b template build'
+      'moru template build'
     )} then use our SDKs to create sandboxes from these templates.
 
 Visit ${asPrimary(
-      'E2B docs (https://e2b.dev/docs)'
+      'Moru SDK docs (https://github.com/moru-ai/sdks)'
     )} to learn how to create sandbox templates and start sandboxes.
 `
   )

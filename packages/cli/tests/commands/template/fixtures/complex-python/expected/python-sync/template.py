@@ -1,4 +1,4 @@
-from e2b import Template
+from moru import Template
 
 template = (
     Template()

@@ -59,7 +59,7 @@ export type SandboxNetworkOpts = {
   /** Specify host mask which will be used for all sandbox requests in the header.
    * You can use the ${PORT} variable that will be replaced with the actual port number of the service.
    *
-   * @default ${PORT}-sandboxid.e2b.app
+   * @default ${PORT}-sandboxid.moru.io
    */
   maskRequestHost?: string
 }
@@ -556,7 +556,7 @@ export class SandboxApi {
       await this.kill(res.data!.sandboxID, opts)
       throw new TemplateError(
         'You need to update the template to use the new SDK. ' +
-          'You can do this by running `e2b template build` in the directory with the template.'
+          'You can do this by running `moru template build` in the directory with the template.'
       )
     }
 

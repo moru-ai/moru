@@ -4,7 +4,7 @@ import tempfile
 
 import pytest
 
-from e2b import AsyncTemplate, default_build_logger, wait_for_timeout
+from moru import AsyncTemplate, default_build_logger, wait_for_timeout
 
 
 @pytest.fixture(scope="module")

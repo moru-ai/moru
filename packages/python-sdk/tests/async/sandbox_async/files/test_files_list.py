@@ -1,6 +1,6 @@
 import uuid
 
-from e2b import AsyncSandbox, FileType
+from moru import AsyncSandbox, FileType
 
 
 async def test_list_directory(async_sandbox: AsyncSandbox):

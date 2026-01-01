@@ -16,7 +16,7 @@ import {
   teamOption,
 } from 'src/options'
 import {
-  E2BConfig,
+  MoruConfig,
   configName,
   deleteConfig,
   getConfigPath,
@@ -27,7 +27,7 @@ import { listSandboxTemplates } from './list'
 import { getPromptTemplates } from 'src/utils/templatePrompt'
 import { confirm } from 'src/utils/confirm'
 import { client } from 'src/api'
-import { handleE2BRequestError } from '../../utils/errors'
+import { handleMoruRequestError } from '../../utils/errors'
 import { getUserConfig } from 'src/user'
 
 async function deleteTemplate(templateID: string) {
@@ -39,7 +39,7 @@ async function deleteTemplate(templateID: string) {
     },
   })
 
-  handleE2BRequestError(res, 'Error deleting sandbox template')
+  handleMoruRequestError(res, 'Error deleting sandbox template')
   return
 }
 
@@ -50,7 +50,7 @@ export const deleteCommand = new commander.Command('delete')
     `specify ${asBold('[template]')} to delete it. If you dont specify ${asBold(
       '[template]'
     )} the command will try to delete sandbox template defined by ${asLocal(
-      'e2b.toml'
+      'moru.toml'
     )}.`
   )
   .addOption(pathOption)
@@ -75,7 +75,7 @@ export const deleteCommand = new commander.Command('delete')
 
         const root = getRoot(opts.path)
 
-        const templates: (Pick<E2BConfig, 'template_id'> & {
+        const templates: (Pick<MoruConfig, 'template_id'> & {
           configPath?: string
         })[] = []
 

@@ -3,7 +3,7 @@ name: Test CLI
 on:
   workflow_call:
     secrets:
-      E2B_API_KEY:
+      MORU_API_KEY:
         required: true
   pull_request:
     branches:
@@ -66,4 +66,4 @@ jobs:
         run: pnpm test
         working-directory: ./packages/cli
         env:
-          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+          MORU_API_KEY: ${{ secrets.MORU_API_KEY }}

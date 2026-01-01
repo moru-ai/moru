@@ -1,6 +1,6 @@
 import pytest
-from e2b.exceptions import NotFoundException
-from e2b import Sandbox, FileType
+from moru.exceptions import NotFoundException
+from moru import Sandbox, FileType
 
 
 def test_get_info_of_file(sandbox: Sandbox):

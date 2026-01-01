@@ -1,5 +1,5 @@
 import child_process from 'child_process'
-import * as e2b from 'e2b'
+import * as moru from '@moru-ai/core'
 import * as http from 'http'
 import * as url from 'url'
 import * as https from 'node:https'
@@ -11,22 +11,22 @@ const PORT = 49984
 
 export async function buildWithProxy(
   userConfig: UserConfig | null,
-  connectionConfig: e2b.ConnectionConfig,
+  connectionConfig: moru.ConnectionConfig,
   accessToken: string,
   template: { templateID: string; buildID: string },
   root: string
 ) {
   if (!userConfig?.dockerProxySet) {
     console.log(
-      'There was an issue during Docker authentication. Please follow the workaround steps from https://e2b.dev/docs/troubleshooting/templates/build-authentication-error and then continue.'
+      'There was an issue during Docker authentication. Please follow the workaround steps from https://moru.io/docs/troubleshooting/templates/build-authentication-error and then continue.'
     )
     const yes = await confirm(
-      'Have you completed the steps from the https://e2b.dev/docs/troubleshooting/templates/build-authentication-error workaround guide?'
+      'Have you completed the steps from the https://moru.io/docs/troubleshooting/templates/build-authentication-error workaround guide?'
     )
 
     if (!yes) {
       console.log(
-        'Please follow the workaround steps from https://e2b.dev/docs/troubleshooting/templates/build-authentication-error and then try again.'
+        'Please follow the workaround steps from https://moru.io/docs/troubleshooting/templates/build-authentication-error and then try again.'
       )
       process.exit(1)
     }
@@ -39,7 +39,7 @@ export async function buildWithProxy(
   })
 
   const accessTokenBase64Encoded = Buffer.from(
-    `_e2b_access_token:${accessToken}`
+    `_moru_access_token:${accessToken}`
   ).toString('base64')
 
   const proxyServer = await proxy(
@@ -66,7 +66,7 @@ export async function buildWithProxy(
 }
 
 async function docker(
-  connectionConfig: e2b.ConnectionConfig,
+  connectionConfig: moru.ConnectionConfig,
   template: { templateID: string; buildID: string },
   root: string
 ) {
@@ -75,7 +75,7 @@ async function docker(
   let success = false
 
   child_process.execSync(
-    `docker tag docker.${connectionConfig.domain}/e2b/custom-envs/${template.templateID}:${template.buildID} ${localDomain}:${PORT}/e2b/custom-envs/${template.templateID}:${template.buildID}`,
+    `docker tag docker.${connectionConfig.domain}/moru/custom-envs/${template.templateID}:${template.buildID} ${localDomain}:${PORT}/moru/custom-envs/${template.templateID}:${template.buildID}`,
     {
       stdio: 'inherit',
       cwd: root,
@@ -91,7 +91,7 @@ async function docker(
     'docker',
     [
       'push',
-      `${localDomain}:${PORT}/e2b/custom-envs/${template.templateID}:${template.buildID}`,
+      `${localDomain}:${PORT}/moru/custom-envs/${template.templateID}:${template.buildID}`,
     ],
     {
       detached: true,
@@ -118,13 +118,13 @@ async function docker(
 }
 
 async function proxy(
-  connectionConfig: e2b.ConnectionConfig,
+  connectionConfig: moru.ConnectionConfig,
   template: { templateID: string; buildID: string },
   credsBase64: string,
   proxyStarted: (value: unknown) => void
 ) {
   const res = await fetch(
-    `https://docker.${connectionConfig.domain}/v2/token?account=_e2b_access_token&scope=repository%3Ae2b%2Fcustom-envs%2F${template.templateID}%3Apush%2Cpull`,
+    `https://docker.${connectionConfig.domain}/v2/token?account=_moru_access_token&scope=repository%3Amoru%2Fcustom-envs%2F${template.templateID}%3Apush%2Cpull`,
     {
       method: 'GET',
       headers: {

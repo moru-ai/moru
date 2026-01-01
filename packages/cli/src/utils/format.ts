@@ -1,5 +1,5 @@
 import * as chalk from 'chalk'
-import * as e2b from 'e2b'
+import * as moru from '@moru-ai/core'
 import * as highlight from 'cli-highlight'
 import * as boxen from 'boxen'
 
@@ -18,7 +18,7 @@ export function asFormattedConfig(config: UserConfig) {
 }
 
 export function asFormattedTeam(
-  team: e2b.components['schemas']['Team'],
+  team: moru.components['schemas']['Team'],
   selected: string
 ) {
   const name = asBold(team.name)
@@ -29,8 +29,8 @@ export function asFormattedTeam(
 }
 
 export function asFormattedSandboxTemplate(
-  template: Pick<e2b.components['schemas']['Template'], 'templateID'> & {
-    aliases?: e2b.components['schemas']['Template']['aliases']
+  template: Pick<moru.components['schemas']['Template'], 'templateID'> & {
+    aliases?: moru.components['schemas']['Template']['aliases']
   },
   configLocalPath?: string
 ) {

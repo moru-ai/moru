@@ -1,6 +1,6 @@
 import * as boxen from 'boxen'
 import * as commander from 'commander'
-import { defaultBuildLogger, Template, TemplateClass } from 'e2b'
+import { defaultBuildLogger, Template, TemplateClass } from '@moru-ai/core'
 import { connectionConfig, ensureAccessToken, ensureAPIKey } from 'src/api'
 import {
   defaultDockerfileName,
@@ -30,7 +30,7 @@ export const createCommand = new commander.Command('create')
   .addOption(pathOption)
   .option(
     '-d, --dockerfile <file>',
-    `specify path to Dockerfile. By default E2B tries to find ${asLocal(
+    `specify path to Dockerfile. By default Moru tries to find ${asLocal(
       defaultDockerfileName
     )} or ${asLocal(fallbackDockerfileName)} in root directory.`
   )
@@ -155,7 +155,7 @@ export const createCommand = new commander.Command('create')
         }
 
         // Display success message with examples
-        const pythonExample = asPython(`from e2b import Sandbox, AsyncSandbox
+        const pythonExample = asPython(`from moru import Sandbox, AsyncSandbox
 
 # Create sync sandbox
 sandbox = Sandbox.create("${templateName}")
@@ -163,13 +163,13 @@ sandbox = Sandbox.create("${templateName}")
 # Create async sandbox
 sandbox = await AsyncSandbox.create("${templateName}")`)
 
-        const typescriptExample = asTypescript(`import { Sandbox } from 'e2b'
+        const typescriptExample = asTypescript(`import { Sandbox } from '@moru-ai/core'
 
 // Create sandbox
 const sandbox = await Sandbox.create('${templateName}')`)
 
         const examplesMessage = `You can now use the template to create custom sandboxes.\nLearn more on ${asPrimary(
-          'https://e2b.dev/docs'
+          'https://moru.io/docs'
         )}`
 
         const exampleHeader = boxen.default(examplesMessage, {

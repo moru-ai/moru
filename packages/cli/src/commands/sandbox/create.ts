@@ -1,4 +1,4 @@
-import * as e2b from 'e2b'
+import * as moru from '@moru-ai/core'
 import * as commander from 'commander'
 import * as path from 'path'
 
@@ -35,7 +35,7 @@ export function createCommand(
       ) => {
         if (deprecated) {
           console.warn(
-            `Warning: The '${name}' command is deprecated and will be removed in future releases. Please use 'e2b sandbox create' instead.`
+            `Warning: The '${name}' command is deprecated and will be removed in future releases. Please use 'moru sandbox create' instead.`
           )
         }
         try {
@@ -87,9 +87,9 @@ export async function connectSandbox({
   template,
 }: {
   apiKey: string
-  template: Pick<e2b.components['schemas']['Template'], 'templateID'>
+  template: Pick<moru.components['schemas']['Template'], 'templateID'>
 }) {
-  const sandbox = await e2b.Sandbox.create(template.templateID, { apiKey })
+  const sandbox = await moru.Sandbox.create(template.templateID, { apiKey })
 
   // keep-alive loop
   const intervalId = setInterval(async () => {

@@ -70,7 +70,7 @@ jobs:
           poetry install
           poetry run pytest --verbose -x
         env:
-          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+          MORU_API_KEY: ${{ secrets.MORU_API_KEY }}
 
       - name: Release Candidate
         if: ${{ contains( github.event.pull_request.labels.*.name, 'python-rc') }}
@@ -93,7 +93,7 @@ jobs:
         run: |
           pnpm run test
         env:
-          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+          MORU_API_KEY: ${{ secrets.MORU_API_KEY }}
 
       - name: Release JS Candidate
         working-directory: packages/js-sdk

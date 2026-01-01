@@ -2,7 +2,7 @@ import time
 
 import pytest
 
-from e2b import Sandbox, SandboxQuery, SandboxState
+from moru import Sandbox, SandboxQuery, SandboxState
 
 
 @pytest.mark.skip_debug()

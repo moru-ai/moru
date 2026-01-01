@@ -22,7 +22,7 @@ export class ReadyCmd {
  *
  * @example
  * ```ts
- * import { Template, waitForPort } from 'e2b'
+ * import { Template, waitForPort } from 'moru'
  *
  * const template = Template()
  *   .fromPythonImage()
@@ -44,7 +44,7 @@ export function waitForPort(port: number): ReadyCmd {
  *
  * @example
  * ```ts
- * import { Template, waitForURL } from 'e2b'
+ * import { Template, waitForURL } from 'moru'
  *
  * const template = Template()
  *   .fromNodeImage()
@@ -65,7 +65,7 @@ export function waitForURL(url: string, statusCode: number = 200): ReadyCmd {
  *
  * @example
  * ```ts
- * import { Template, waitForProcess } from 'e2b'
+ * import { Template, waitForProcess } from 'moru'
  *
  * const template = Template()
  *   .fromBaseImage()
@@ -86,7 +86,7 @@ export function waitForProcess(processName: string): ReadyCmd {
  *
  * @example
  * ```ts
- * import { Template, waitForFile } from 'e2b'
+ * import { Template, waitForFile } from 'moru'
  *
  * const template = Template()
  *   .fromBaseImage()
@@ -107,7 +107,7 @@ export function waitForFile(filename: string): ReadyCmd {
  *
  * @example
  * ```ts
- * import { Template, waitForTimeout } from 'e2b'
+ * import { Template, waitForTimeout } from 'moru'
  *
  * const template = Template()
  *   .fromNodeImage()

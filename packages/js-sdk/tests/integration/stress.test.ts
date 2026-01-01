@@ -9,7 +9,7 @@ for (let i = 0; i < view.length; i++) {
   view[i] = Math.floor(Math.random() * 256)
 }
 
-const integrationTestTemplate = 'integration-test-v1'
+const integrationTestTemplate = 'base'
 const sanboxCount = 10
 
 test.skipIf(!isIntegrationTest)(

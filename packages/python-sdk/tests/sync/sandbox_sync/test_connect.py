@@ -1,7 +1,7 @@
 import uuid
 import pytest
 
-from e2b import Sandbox
+from moru import Sandbox
 
 
 @pytest.mark.skip_debug()

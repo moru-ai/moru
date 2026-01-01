@@ -1,40 +1,36 @@
-<p align="center">
-  <img width="100" src="https://raw.githubusercontent.com/e2b-dev/E2B/refs/heads/main/readme-assets/logo-circle.png" alt="e2b logo">
-</p>
+# Moru CLI
 
-# E2B CLI
-
-This CLI tool allows you to build manager your running E2B sandbox and sandbox templates. Learn more in [our documentation](https://e2b.dev/docs).
+This CLI tool allows you to build and manage your running Moru sandboxes and sandbox templates. Learn more in [our documentation](https://moru.io/docs).
 
 ### 1. Install the CLI
 
 **Using Homebrew (on macOS)**
 
 ```bash
-brew install e2b
+brew install moru
 ```
 
 **Using NPM**
 
 ```bash
-npm install -g @e2b/cli
+npm install -g @moru-ai/cli
 ```
 
 ### 2. Authenticate
 
 ```bash
-e2b auth login
+moru auth login
 ```
 
 > [!NOTE]
 > To authenticate without the ability to open the browser, provide
-> `E2B_ACCESS_TOKEN` as an environment variable. You can find your token
-> in Account Settings under the Team selector at [e2b.dev/dashboard](https://e2b.dev/dashboard). Then use the CLI like this:
-> `E2B_ACCESS_TOKEN=sk_e2b_... e2b template build`.
+> `MORU_ACCESS_TOKEN` as an environment variable. You can find your token
+> in Account Settings under the Team selector at [moru.io/dashboard](https://moru.io/dashboard). Then use the CLI like this:
+> `MORU_ACCESS_TOKEN=sk_moru_... moru template build`.
 
-> [!IMPORTANT]  
-> Note the distinction between `E2B_ACCESS_TOKEN` and `E2B_API_KEY`.
+> [!IMPORTANT]
+> Note the distinction between `MORU_ACCESS_TOKEN` and `MORU_API_KEY`.
 
 ### 3. Check out docs
 
-Visit our [CLI documentation](https://e2b.dev/docs) to learn more.
+Visit our [CLI documentation](https://moru.io/docs) to learn more.

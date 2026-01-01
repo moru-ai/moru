@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from e2b import AsyncSandbox
+from moru import AsyncSandbox
 
 import dotenv
 

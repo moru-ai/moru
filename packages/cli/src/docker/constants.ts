@@ -1,4 +1,4 @@
-export const defaultDockerfileName = 'e2b.Dockerfile'
+export const defaultDockerfileName = 'moru.Dockerfile'
 export const fallbackDockerfileName = 'Dockerfile'
 
 export const basicDockerfile = `# You can use most Debian-based base images

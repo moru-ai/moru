@@ -1,5 +1,5 @@
 import asyncio
-from e2b import AsyncTemplate, default_build_logger
+from moru import AsyncTemplate, default_build_logger
 from .template import template
 
 

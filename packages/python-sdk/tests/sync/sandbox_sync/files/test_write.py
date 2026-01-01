@@ -1,7 +1,7 @@
 import io
 import uuid
 
-from e2b.sandbox.filesystem.filesystem import WriteInfo, WriteEntry
+from moru.sandbox.filesystem.filesystem import WriteInfo, WriteEntry
 
 
 def test_write_text_file(sandbox):

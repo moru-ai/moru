@@ -1,29 +1,27 @@
 {
-  "name": "@e2b/cli",
-  "version": "2.4.2",
-  "description": "CLI for managing e2b sandbox templates",
-  "homepage": "https://e2b.dev",
+  "name": "@moru-ai/cli",
+  "version": "0.1.0",
+  "description": "CLI for managing Moru sandbox templates",
+  "homepage": "https://github.com/moru-ai/sdks",
   "license": "MIT",
   "author": {
-    "name": "FoundryLabs, Inc.",
-    "email": "hello@e2b.dev",
-    "url": "https://e2b.dev"
+    "name": "Moru AI",
+    "url": "https://github.com/moru-ai"
   },
-  "bugs": "https://github.com/e2b-dev/e2b/issues",
+  "bugs": "https://github.com/moru-ai/sdks/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/e2b-dev/e2b",
+    "url": "https://github.com/moru-ai/sdks",
     "directory": "packages/cli"
   },
   "publishConfig": {
     "access": "public"
   },
   "keywords": [
-    "e2b",
+    "moru",
     "ai-agents",
     "agents",
     "ai",
-    "code-interpreter",
     "sandbox",
     "code",
     "cli",
@@ -72,7 +70,7 @@
     "package.json"
   ],
   "bin": {
-    "e2b": "dist/index.js"
+    "moru": "dist/index.js"
   },
   "dependencies": {
     "@iarna/toml": "^2.2.5",
@@ -86,7 +84,7 @@
     "commander": "^11.1.0",
     "console-table-printer": "^2.11.2",
     "dockerfile-ast": "^0.6.1",
-    "e2b": "^2.8.4",
+    "@moru-ai/core": "workspace:^",
     "handlebars": "^4.7.8",
     "inquirer": "^12.10.0",
     "open": "^9.1.0",

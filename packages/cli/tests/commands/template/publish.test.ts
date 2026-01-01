@@ -7,17 +7,17 @@ describe('Template Publish --config', () => {
     let testDir: string
 
     beforeEach(async () => {
-        testDir = await fs.mkdtemp('e2b-publish-config-test-')
+        testDir = await fs.mkdtemp('moru-publish-config-test-')
 
         const defaultConfig = `template_id = "default-template-id"
-dockerfile = "e2b.Dockerfile"`
-        await fs.writeFile(path.join(testDir, 'e2b.toml'), defaultConfig)
+dockerfile = "moru.Dockerfile"`
+        await fs.writeFile(path.join(testDir, 'moru.toml'), defaultConfig)
 
         const customConfig = `template_id = "custom-template-id"
-dockerfile = "e2b.Dockerfile"`
+dockerfile = "moru.Dockerfile"`
         await fs.writeFile(path.join(testDir, 'custom.toml'), customConfig)
 
-        await fs.writeFile(path.join(testDir, 'e2b.Dockerfile'), 'FROM alpine:3.18')
+        await fs.writeFile(path.join(testDir, 'moru.Dockerfile'), 'FROM alpine:3.18')
     })
 
     afterEach(async () => {
@@ -26,7 +26,7 @@ dockerfile = "e2b.Dockerfile"`
         }
     })
 
-    test('uses the config file passed via --config even when e2b.toml exists', async () => {
+    test('uses the config file passed via --config even when moru.toml exists', async () => {
         const cliPath = path.join(process.cwd(), 'dist', 'index.js')
 
         let output = ''
@@ -49,7 +49,7 @@ dockerfile = "e2b.Dockerfile"`
         expect(output).not.toContain('default-template-id')
     })
 
-    test('uses the default e2b.toml when --config is not provided', async () => {
+    test('uses the default moru.toml when --config is not provided', async () => {
         const cliPath = path.join(process.cwd(), 'dist', 'index.js')
 
         let output = ''
@@ -65,7 +65,7 @@ dockerfile = "e2b.Dockerfile"`
         // Should reference the default config and template id
         expect(output).toContain('Sandbox templates to publish')
         expect(output).toContain('default-template-id')
-        expect(output).toContain('e2b.toml')
+        expect(output).toContain('moru.toml')
         // Should not mention the custom config/template id
         expect(output).not.toContain('custom-template-id')
     })

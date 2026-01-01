@@ -970,9 +970,9 @@
       "type": "object",
       "x-dockerHubUrl": "https://hub.docker.com/mcp/server/dynatrace-mcp-server/overview"
     },
-    "e2b": {
-      "title": "E2B",
-      "description": "Giving Claude ability to run code with E2B via MCP (Model Context Protocol).",
+    "moru": {
+      "title": "Moru",
+      "description": "Giving Claude ability to run code with Moru via MCP (Model Context Protocol).",
       "required": [
         "apiKey"
       ],
@@ -983,7 +983,7 @@
         }
       },
       "type": "object",
-      "x-dockerHubUrl": "https://hub.docker.com/mcp/server/e2b/overview"
+      "x-dockerHubUrl": "https://hub.docker.com/mcp/server/moru/overview"
     },
     "edubase": {
       "title": "EduBase",

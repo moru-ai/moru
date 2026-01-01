@@ -39,7 +39,7 @@ const failureMap: Record<string, number | undefined> = {
 }
 
 export const restHandlers = [
-  http.post('https://api.e2b.app/v3/templates', async ({ request }) => {
+  http.post('https://api.moru.io/v3/templates', async ({ request }) => {
     const { alias } = (await request.clone().json()) as { alias: string }
     return HttpResponse.json({
       buildID: randomUUID(),
@@ -47,13 +47,13 @@ export const restHandlers = [
     })
   }),
   http.post(
-    'https://api.e2b.app/v2/templates/:templateID/builds/:buildID',
+    'https://api.moru.io/v2/templates/:templateID/builds/:buildID',
     () => {
       return HttpResponse.json({})
     }
   ),
   http.get<{ templateID: string; buildID: string }>(
-    'https://api.e2b.app/templates/:templateID/builds/:buildID/status',
+    'https://api.moru.io/templates/:templateID/builds/:buildID/status',
     ({ params }) => {
       const { templateID } = params
       return HttpResponse.json({
@@ -133,7 +133,7 @@ async function expectToThrowAndCheckTrace(
 }
 
 buildTemplateTest('traces on fromImage', async ({ buildTemplate }) => {
-  const template = Template().fromImage('e2b.dev/this-image-does-not-exist')
+  const template = Template().fromImage('moru.io/this-image-does-not-exist')
   await expectToThrowAndCheckTrace(async () => {
     await buildTemplate(template, { alias: 'fromImage', skipCache: true })
   }, 'fromImage')

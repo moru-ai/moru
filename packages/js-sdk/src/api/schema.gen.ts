@@ -878,6 +878,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/templates/{templateID}/builds/{buildID}/logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Get template build logs */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Starting timestamp of the logs that should be returned in milliseconds */
+                    cursor?: number;
+                    direction?: components["schemas"]["LogsDirection"];
+                    level?: components["schemas"]["LogLevel"];
+                    /** @description Maximum number of logs that should be returned */
+                    limit?: number;
+                    /** @description Source of the logs that should be returned from */
+                    source?: components["schemas"]["LogsSource"];
+                };
+                header?: never;
+                path: {
+                    buildID: components["parameters"]["buildID"];
+                    templateID: components["parameters"]["templateID"];
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successfully returned the template build logs */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TemplateBuildLogsResponse"];
+                    };
+                };
+                401: components["responses"]["401"];
+                404: components["responses"]["404"];
+                500: components["responses"]["500"];
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/templates/{templateID}/builds/{buildID}/status": {
         parameters: {
             query?: never;
@@ -890,6 +941,8 @@ export interface paths {
             parameters: {
                 query?: {
                     level?: components["schemas"]["LogLevel"];
+                    /** @description Maximum number of logs that should be returned */
+                    limit?: number;
                     /** @description Index of the starting build log that should be returned with the template */
                     logsOffset?: number;
                 };
@@ -1151,6 +1204,12 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AdminSandboxKillResult: {
+            /** @description Number of sandboxes that failed to kill */
+            failedCount: number;
+            /** @description Number of sandboxes successfully killed */
+            killedCount: number;
+        };
         AWSRegistry: {
             /** @description AWS Access Key ID for ECR authentication */
             awsAccessKeyId: string;
@@ -1341,6 +1400,26 @@ export interface components {
          * @enum {string}
          */
         LogLevel: "debug" | "info" | "warn" | "error";
+        /**
+         * @description Direction of the logs that should be returned
+         * @enum {string}
+         */
+        LogsDirection: "forward" | "backward";
+        /**
+         * @description Source of the logs that should be returned
+         * @enum {string}
+         */
+        LogsSource: "temporary" | "persistent";
+        MachineInfo: {
+            /** @description CPU architecture of the node */
+            cpuArchitecture: string;
+            /** @description CPU family of the node */
+            cpuFamily: string;
+            /** @description CPU model of the node */
+            cpuModel: string;
+            /** @description CPU model name of the node */
+            cpuModelName: string;
+        };
         /** @description Team metric with timestamp */
         MaxTeamMetric: {
             /**
@@ -1414,6 +1493,7 @@ export interface components {
             createSuccesses: number;
             /** @description Identifier of the node */
             id: string;
+            machineInfo: components["schemas"]["MachineInfo"];
             metrics: components["schemas"]["NodeMetrics"];
             /**
              * @deprecated
@@ -1455,6 +1535,7 @@ export interface components {
             createSuccesses: number;
             /** @description Identifier of the node */
             id: string;
+            machineInfo: components["schemas"]["MachineInfo"];
             metrics: components["schemas"]["NodeMetrics"];
             /**
              * @deprecated
@@ -1837,6 +1918,13 @@ export interface components {
             status: components["schemas"]["TemplateBuildStatus"];
             /** @description Identifier of the template */
             templateID: string;
+        };
+        TemplateBuildLogsResponse: {
+            /**
+             * @description Build logs structured
+             * @default []
+             */
+            logs: components["schemas"]["BuildLogEntry"][];
         };
         TemplateBuildRequest: {
             /** @description Alias of the template */

@@ -3,7 +3,7 @@ from datetime import datetime
 
 from time import sleep
 
-from e2b import AsyncSandbox
+from moru import AsyncSandbox
 
 
 @pytest.mark.skip_debug()

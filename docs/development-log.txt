@@ -1,0 +1,59 @@
+# Moru SDK Deployment - Development Log
+
+## 2024-12-29 - Session 1
+
+### Completed Tasks
+
+1. **Updated default domain from sandbox.moru.io to moru.io**
+   - packages/js-sdk/src/connectionConfig.ts
+   - packages/python-sdk/moru/connection_config.py
+   - Updated docstrings in both files
+
+2. **Updated CLI config path from ~/.e2b/ to ~/.moru/**
+   - packages/cli/src/user.ts: USER_CONFIG_PATH
+   - Changed DOCS_BASE to use moru.io
+   - Changed E2B_DOCS_BASE env var to MORU_DOCS_BASE
+
+3. **Replaced e2b command references with moru**
+   - packages/cli/src/commands/sandbox/create.ts: 'moru sandbox create'
+   - packages/cli/src/api.ts: 'moru auth login', removed e2b.dev dashboard links
+   - packages/cli/src/commands/template/build.ts: Multiple updates
+     - MORU_IMAGE_URI_MASK env var
+     - moru.io/docs links
+     - 'moru auth login' command
+     - Example code uses 'from moru import'
+     - Support email: support@moru.io
+   - packages/cli/src/utils/commands2md.ts: 'moru' prefix in docs
+   - packages/cli/src/commands/auth/configure.ts: 'moru auth login'
+   - packages/cli/src/commands/auth/login.ts: 'moru auth logout', 'moru auth configure'
+   - packages/js-sdk/src/sandbox/filesystem/index.ts: 'moru template build'
+   - packages/js-sdk/src/sandbox/sandboxApi.ts: 'moru template build', 'moru.io' domain
+   - packages/python-sdk/moru/sandbox_async/sandbox_api.py: 'moru template build'
+   - packages/python-sdk/moru/sandbox_async/filesystem/filesystem.py: 'moru template build'
+   - packages/python-sdk/moru/sandbox_sync/sandbox_api.py: 'moru template build'
+   - packages/python-sdk/moru/sandbox_sync/filesystem/filesystem.py: 'moru template build'
+
+4. **Updated test files**
+   - packages/js-sdk/tests/connectionConfig.test.ts: MORU_* env vars, api.moru.io
+   - packages/python-sdk/tests/test_connection_config.py: MORU_* env vars, api.moru.io
+   - packages/js-sdk/tests/template/stacktrace.test.ts: api.moru.io mock URLs
+
+### In Progress
+
+- Continuing to scan for remaining e2b references
+- Need to update test domains and fixtures
+
+### Remaining Tasks (Phase 1)
+
+- Update all error messages and help text
+- Update all test domains to moru.io
+- Update test fixtures with Moru branding
+- Clear changelog history
+- Update README files
+
+### Notes
+
+- User-Agent headers kept as moru-js-sdk/ and moru-python-sdk/ (matches infra expectations)
+- Support email: support@moru.io
+- Auth URL: auth.moru.io (fallback)
+- Dashboard URL: dashboard.moru.io (planned, not yet available)

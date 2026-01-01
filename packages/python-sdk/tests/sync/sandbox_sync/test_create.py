@@ -1,7 +1,7 @@
 import pytest
 
-from e2b import Sandbox
-from e2b.sandbox.sandbox_api import SandboxQuery
+from moru import Sandbox
+from moru.sandbox.sandbox_api import SandboxQuery
 
 
 @pytest.mark.skip_debug()

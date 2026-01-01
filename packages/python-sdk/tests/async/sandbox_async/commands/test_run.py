@@ -1,6 +1,6 @@
 import pytest
 
-from e2b import AsyncSandbox, TimeoutException
+from moru import AsyncSandbox, TimeoutException
 
 
 async def test_run(async_sandbox: AsyncSandbox):

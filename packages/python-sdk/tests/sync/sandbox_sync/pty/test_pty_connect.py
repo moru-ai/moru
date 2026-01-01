@@ -1,6 +1,6 @@
 import pytest
 
-from e2b.sandbox.commands.command_handle import PtySize
+from moru.sandbox.commands.command_handle import PtySize
 
 
 @pytest.mark.skip_debug()

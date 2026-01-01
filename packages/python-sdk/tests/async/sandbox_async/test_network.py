@@ -1,7 +1,7 @@
 import pytest
 
-from e2b import ALL_TRAFFIC, SandboxNetworkOpts
-from e2b.sandbox.commands.command_handle import CommandExitException
+from moru import ALL_TRAFFIC, SandboxNetworkOpts
+from moru.sandbox.commands.command_handle import CommandExitException
 
 
 @pytest.mark.skip_debug()
@@ -125,7 +125,7 @@ async def test_allow_public_traffic_false(async_sandbox_factory):
         assert response.status_code == 403
 
         # Test 2: Request with valid traffic access token should succeed
-        headers = {"e2b-traffic-access-token": async_sandbox.traffic_access_token}
+        headers = {"moru-traffic-access-token": async_sandbox.traffic_access_token}
         response = await client.get(sandbox_url, headers=headers, follow_redirects=True)
         assert response.status_code == 200
 

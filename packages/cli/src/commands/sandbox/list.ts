@@ -1,6 +1,6 @@
 import * as tablePrinter from 'console-table-printer'
 import * as commander from 'commander'
-import { components, Sandbox, SandboxInfo } from 'e2b'
+import { components, Sandbox, SandboxInfo } from '@moru-ai/core'
 
 import { ensureAPIKey } from 'src/api'
 import { parseMetadata } from './utils'

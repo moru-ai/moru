@@ -4,7 +4,7 @@ import * as commander from 'commander'
 import { asBold, asTimestamp, withUnderline } from 'src/utils/format'
 import { wait } from 'src/utils/wait'
 import { formatEnum, Format, isRunning } from './utils'
-import { Sandbox } from 'e2b'
+import { Sandbox } from '@moru-ai/core'
 import { ensureAPIKey } from '../../api'
 
 export const metricsCommand = new commander.Command('metrics')

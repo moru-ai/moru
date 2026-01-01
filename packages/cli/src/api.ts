@@ -1,37 +1,34 @@
 import * as boxen from 'boxen'
-import * as e2b from 'e2b'
+import * as moru from '@moru-ai/core'
 
 import { getUserConfig, UserConfig } from './user'
 import { asBold, asPrimary } from './utils/format'
 
-export let apiKey = process.env.E2B_API_KEY
-export let accessToken = process.env.E2B_ACCESS_TOKEN
+export let apiKey = process.env.MORU_API_KEY
+export let accessToken = process.env.MORU_ACCESS_TOKEN
 
 const authErrorBox = (keyName: string) => {
-  let link
   let msg
   switch (keyName) {
-    case 'E2B_API_KEY':
-      link = 'https://e2b.dev/dashboard?tab=keys'
+    case 'MORU_API_KEY':
       msg = 'API key'
       break
-    case 'E2B_ACCESS_TOKEN':
-      link = 'https://e2b.dev/dashboard?tab=personal'
+    case 'MORU_ACCESS_TOKEN':
       msg = 'access token'
       break
   }
   // throwing error in default in switch statement results in unreachable code,
-  // so we need to check if link and msg are defined here instead
-  if (!link || !msg) {
+  // so we need to check if msg is defined here instead
+  if (!msg) {
     throw new Error(`Unknown key name: ${keyName}`)
   }
   return boxen.default(
-    `You must be logged in to use this command. Run ${asBold('e2b auth login')}.
+    `You must be logged in to use this command. Run ${asBold('moru auth login')}.
 
 If you are seeing this message in CI/CD you may need to set the ${asBold(
       `${keyName}`
     )} environment variable.
-Visit ${asPrimary(link)} to get the ${msg}.`,
+Contact ${asPrimary('support@moru.io')} to get the ${msg}.`,
     {
       width: 70,
       float: 'center',
@@ -51,7 +48,7 @@ export function ensureAPIKey() {
   }
 
   if (!apiKey) {
-    console.error(authErrorBox('E2B_API_KEY'))
+    console.error(authErrorBox('MORU_API_KEY'))
     process.exit(1)
   } else {
     return apiKey
@@ -61,7 +58,7 @@ export function ensureAPIKey() {
 export function ensureUserConfig(): UserConfig {
   const userConfig = getUserConfig()
   if (!userConfig) {
-    console.error('No user config found, run `e2b auth login` to log in first.')
+    console.error('No user config found, run `moru auth login` to log in first.')
     process.exit(1)
   }
   return userConfig
@@ -75,7 +72,7 @@ export function ensureAccessToken() {
   }
 
   if (!accessToken) {
-    console.error(authErrorBox('E2B_ACCESS_TOKEN'))
+    console.error(authErrorBox('MORU_ACCESS_TOKEN'))
     process.exit(1)
   } else {
     return accessToken
@@ -84,8 +81,8 @@ export function ensureAccessToken() {
 
 const userConfig = getUserConfig()
 
-export const connectionConfig = new e2b.ConnectionConfig({
-  accessToken: process.env.E2B_ACCESS_TOKEN || userConfig?.accessToken,
-  apiKey: process.env.E2B_API_KEY || userConfig?.teamApiKey,
+export const connectionConfig = new moru.ConnectionConfig({
+  accessToken: process.env.MORU_ACCESS_TOKEN || userConfig?.accessToken,
+  apiKey: process.env.MORU_API_KEY || userConfig?.teamApiKey,
 })
-export const client = new e2b.ApiClient(connectionConfig)
+export const client = new moru.ApiClient(connectionConfig)

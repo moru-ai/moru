@@ -1,6 +1,6 @@
 import pytest
 
-from e2b import NotFoundException
+from moru import NotFoundException
 
 
 def test_connect_to_process(sandbox):

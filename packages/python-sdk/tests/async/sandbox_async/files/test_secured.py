@@ -3,7 +3,7 @@ import urllib.error
 import json
 import pytest
 
-from e2b.sandbox_async.main import AsyncSandbox
+from moru.sandbox_async.main import AsyncSandbox
 
 
 @pytest.mark.skip_debug()

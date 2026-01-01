@@ -1,0 +1,16 @@
+# This is a config for Moru sandbox template.
+# You can use template ID or template name (base) to create a sandbox:
+
+# Python SDK
+# from moru import Sandbox, AsyncSandbox
+# sandbox = Sandbox("base") # Sync sandbox
+# sandbox = await AsyncSandbox.create("base") # Async sandbox
+
+# JS SDK
+# import { Sandbox } from '@moru-ai/core'
+# const sandbox = await Sandbox.create('base')
+
+memory_mb = 512
+start_cmd = "npm run dev"
+dockerfile = "moru.Dockerfile"
+template_name = "base"

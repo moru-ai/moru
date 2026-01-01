@@ -29,7 +29,7 @@ process_mdx() {
 
 for package in "${packages[@]}"; do
     # generate raw SDK reference markdown file
-    poetry run pydoc-markdown -p e2b."${package}" >sdk_ref/"${package}".mdx
+    poetry run pydoc-markdown -p moru."${package}" >sdk_ref/"${package}".mdx
     # process the generated markdown
     process_mdx "sdk_ref/${package}.mdx"
     # move to docs
@@ -40,7 +40,7 @@ done
 # Generate documentation for template submodules and place them under both template_sync and template_async
 for submodule in "${template_submodules[@]}"; do
     # generate raw SDK reference markdown file
-    poetry run pydoc-markdown -p e2b.template."${submodule}" >sdk_ref/"${submodule}".mdx
+    poetry run pydoc-markdown -p moru.template."${submodule}" >sdk_ref/"${submodule}".mdx
     # process the generated markdown
     process_mdx "sdk_ref/${submodule}.mdx"
     

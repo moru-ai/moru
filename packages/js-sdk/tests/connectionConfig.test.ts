@@ -6,8 +6,8 @@ let originalEnv: { [key: string]: string | undefined }
 
 beforeEach(() => {
   originalEnv = {
-    E2B_API_URL: process.env.E2B_API_URL,
-    E2B_DEBUG: process.env.E2B_DEBUG,
+    MORU_API_URL: process.env.MORU_API_URL,
+    MORU_DEBUG: process.env.MORU_DEBUG,
   }
 })
 
@@ -24,11 +24,11 @@ afterEach(() => {
 
 test('api_url defaults correctly', () => {
   // Ensure no env vars interfere
-  delete process.env.E2B_API_URL
-  delete process.env.E2B_DEBUG
+  delete process.env.MORU_API_URL
+  delete process.env.MORU_DEBUG
 
   const config = new ConnectionConfig()
-  assert.equal(config.apiUrl, 'https://api.e2b.app')
+  assert.equal(config.apiUrl, 'https://api.moru.io')
 })
 
 test('api_url in args', () => {
@@ -37,14 +37,14 @@ test('api_url in args', () => {
 })
 
 test('api_url in env var', () => {
-  process.env.E2B_API_URL = 'http://localhost:8080'
+  process.env.MORU_API_URL = 'http://localhost:8080'
 
   const config = new ConnectionConfig()
   assert.equal(config.apiUrl, 'http://localhost:8080')
 })
 
 test('api_url has correct priority', () => {
-  process.env.E2B_API_URL = 'http://localhost:1111'
+  process.env.MORU_API_URL = 'http://localhost:1111'
 
   const config = new ConnectionConfig({ apiUrl: 'http://localhost:8080' })
   assert.equal(config.apiUrl, 'http://localhost:8080')

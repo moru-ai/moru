@@ -2,7 +2,7 @@ import * as boxen from 'boxen'
 import * as child_process from 'child_process'
 import commandExists from 'command-exists'
 import * as commander from 'commander'
-import * as e2b from 'e2b'
+import * as moru from '@moru-ai/core'
 import * as fs from 'fs'
 import * as path from 'path'
 import { client, connectionConfig, ensureAccessToken } from 'src/api'
@@ -16,7 +16,7 @@ import { getUserConfig } from 'src/user'
 import { getRoot } from 'src/utils/filesystem'
 import { wait } from 'src/utils/wait'
 import * as stripAnsi from 'strip-ansi'
-import { handleE2BRequestError } from '../../utils/errors'
+import { handleMoruRequestError } from '../../utils/errors'
 import {
   asBold,
   asBuildLogs,
@@ -33,7 +33,7 @@ import { buildWithProxy } from './buildWithProxy'
 const templateCheckInterval = 500 // 0.5 sec
 
 // Custom image URI is used for Bring Your Own Compute with self-hosted Docker registry
-export const imageUriMask = process.env.E2B_IMAGE_URI_MASK
+export const imageUriMask = process.env.MORU_IMAGE_URI_MASK
 
 async function getTemplateBuildLogs({
   templateID,
@@ -61,12 +61,12 @@ async function getTemplateBuildLogs({
     }
   )
 
-  handleE2BRequestError(res, 'Error getting template build status')
-  return res.data as e2b.paths['/templates/{templateID}/builds/{buildID}/status']['get']['responses']['200']['content']['application/json']
+  handleMoruRequestError(res, 'Error getting template build status')
+  return res.data as moru.paths['/templates/{templateID}/builds/{buildID}/status']['get']['responses']['200']['content']['application/json']
 }
 
 async function requestTemplateBuild(
-  args: e2b.paths['/templates']['post']['requestBody']['content']['application/json']
+  args: moru.paths['/templates']['post']['requestBody']['content']['application/json']
 ) {
   return await client.api.POST('/templates', {
     body: args,
@@ -75,7 +75,7 @@ async function requestTemplateBuild(
 
 async function requestTemplateRebuild(
   templateID: string,
-  args: e2b.paths['/templates/{templateID}']['post']['requestBody']['content']['application/json']
+  args: moru.paths['/templates/{templateID}']['post']['requestBody']['content']['application/json']
 ) {
   return await client.api.POST('/templates/{templateID}', {
     body: args,
@@ -119,7 +119,7 @@ async function triggerTemplateBuild(templateID: string, buildID: string) {
     throw new Error('Error triggering template build')
   }
 
-  handleE2BRequestError(res, 'Error triggering template build')
+  handleMoruRequestError(res, 'Error triggering template build')
   return res.data
 }
 
@@ -140,13 +140,13 @@ export const buildCommand = new commander.Command('build')
     )} to rebuild it. If you dont's specify ${asBold(
       '[template]'
     )} and there is no ${asLocal(
-      'e2b.toml'
+      'moru.toml'
     )} a new sandbox template will be created.`
   )
   .addOption(pathOption)
   .option(
     '-d, --dockerfile <file>',
-    `specify path to Dockerfile. By default E2B tries to find ${asLocal(
+    `specify path to Dockerfile. By default Moru tries to find ${asLocal(
       defaultDockerfileName
     )} or ${asLocal(fallbackDockerfileName)} in root directory.`
   )
@@ -204,7 +204,7 @@ export const buildCommand = new commander.Command('build')
 This is the v1 build system which is now deprecated.
 Please migrate to the new build system v2.
 
-Migration guide: ${asPrimary('https://e2b.dev/docs/template/migration-v2')}`
+Migration guide: ${asPrimary('https://moru.io/docs/template/migration-v2')}`
 
         const deprecationWarning = boxen.default(deprecationMessage, {
           padding: {
@@ -376,7 +376,7 @@ Migration guide: ${asPrimary('https://e2b.dev/docs/template/migration-v2')}`
         if (imageUriMask == undefined) {
           try {
             child_process.execSync(
-              `echo "${accessToken}" | docker login docker.${connectionConfig.domain} -u _e2b_access_token --password-stdin`,
+              `echo "${accessToken}" | docker login docker.${connectionConfig.domain} -u _moru_access_token --password-stdin`,
               {
                 stdio: 'inherit',
                 cwd: root,
@@ -384,7 +384,7 @@ Migration guide: ${asPrimary('https://e2b.dev/docs/template/migration-v2')}`
             )
           } catch (err: any) {
             console.error(
-              'Docker login failed. Please try to log in with `e2b auth login` and try again.'
+              'Docker login failed. Please try to log in with `moru auth login` and try again.'
             )
             process.exit(1)
           }
@@ -504,7 +504,7 @@ async function waitForBuildFinish(
       case 'building':
         break
       case 'ready': {
-        const pythonExample = asPython(`from e2b import Sandbox, AsyncSandbox
+        const pythonExample = asPython(`from moru import Sandbox, AsyncSandbox
 
 # Create sync sandbox
 sandbox = Sandbox.create("${
@@ -516,7 +516,7 @@ sandbox = await AsyncSandbox.create("${
           aliases?.length ? aliases[0] : template.templateID
         }")`)
 
-        const typescriptExample = asTypescript(`import { Sandbox } from 'e2b'
+        const typescriptExample = asTypescript(`import { Sandbox } from '@moru-ai/core'
 
 // Create sandbox
 const sandbox = await Sandbox.create('${
@@ -524,7 +524,7 @@ const sandbox = await Sandbox.create('${
         }')`)
 
         const examplesMessage = `You can now use the template to create custom sandboxes.\nLearn more on ${asPrimary(
-          'https://e2b.dev/docs'
+          'https://moru.io/docs'
         )}`
 
         const exampleHeader = boxen.default(examplesMessage, {
@@ -565,7 +565,7 @@ const sandbox = await Sandbox.create('${
             aliases,
             ...template,
           })} failed.\nCheck the logs above for more details or contact us ${asPrimary(
-            '(https://e2b.dev/docs/support)'
+            '(support@moru.io)'
           )} to get help.\n`
         )
     }
@@ -602,7 +602,7 @@ export function getDockerfile(root: string, file?: string) {
     }
   }
 
-  // Check if default dockerfile e2b.Dockerfile exists
+  // Check if default dockerfile moru.Dockerfile exists
   let dockerfilePath = path.join(root, defaultDockerfileName)
   let dockerfileContent = loadFile(dockerfilePath)
   const defaultDockerfileRelativePath = path.relative(root, dockerfilePath)
@@ -640,11 +640,11 @@ export function getDockerfile(root: string, file?: string) {
 }
 
 async function requestBuildTemplate(
-  args: e2b.paths['/templates']['post']['requestBody']['content']['application/json'],
+  args: moru.paths['/templates']['post']['requestBody']['content']['application/json'],
   templateID?: string
 ): Promise<
   Omit<
-    e2b.paths['/templates']['post']['responses']['202']['content']['application/json'],
+    moru.paths['/templates']['post']['responses']['202']['content']['application/json'],
     'logs'
   >
 > {
@@ -655,7 +655,7 @@ async function requestBuildTemplate(
     res = await requestTemplateBuild(args)
   }
 
-  handleE2BRequestError(res, 'Error requesting template build')
+  handleMoruRequestError(res, 'Error requesting template build')
   return res.data
 }
 
@@ -672,7 +672,7 @@ function dockerImageUrl(
   imageUrlMask?: string
 ): string {
   if (imageUrlMask == undefined) {
-    return `docker.${defaultDomain}/e2b/custom-envs/${templateID}:${buildID}`
+    return `docker.${defaultDomain}/moru/custom-envs/${templateID}:${buildID}`
   }
 
   return imageUrlMask

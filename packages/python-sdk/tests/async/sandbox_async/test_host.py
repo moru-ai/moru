@@ -2,7 +2,7 @@ import asyncio
 
 import httpx
 
-from e2b import AsyncSandbox
+from moru import AsyncSandbox
 
 
 async def test_ping_server(async_sandbox: AsyncSandbox, debug, helpers):

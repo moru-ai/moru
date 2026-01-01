@@ -1,6 +1,6 @@
 import pytest
 
-from e2b import NotFoundException, AsyncSandbox
+from moru import NotFoundException, AsyncSandbox
 
 
 async def test_read_file(async_sandbox: AsyncSandbox):

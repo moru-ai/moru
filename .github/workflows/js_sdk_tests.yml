@@ -3,7 +3,7 @@ name: Test JS SDK
 on:
   workflow_call:
     secrets:
-      E2B_API_KEY:
+      MORU_API_KEY:
         required: true
   pull_request:
     branches:
@@ -82,7 +82,7 @@ jobs:
       - name: Run Node tests
         run: pnpm test
         env:
-          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+          MORU_API_KEY: ${{ secrets.MORU_API_KEY }}
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v2
@@ -90,7 +90,7 @@ jobs:
       - name: Run Bun tests
         run: pnpm test:bun
         env:
-          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+          MORU_API_KEY: ${{ secrets.MORU_API_KEY }}
 
       - name: Install Deno
         uses: denoland/setup-deno@v1
@@ -100,4 +100,4 @@ jobs:
       - name: Run Deno tests
         run: pnpm test:deno
         env:
-          E2B_API_KEY: ${{ secrets.E2B_API_KEY }}
+          MORU_API_KEY: ${{ secrets.MORU_API_KEY }}

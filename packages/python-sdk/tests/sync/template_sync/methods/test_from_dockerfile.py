@@ -1,7 +1,7 @@
 import pytest
 
-from e2b import Template
-from e2b.template.types import InstructionType
+from moru import Template
+from moru.template.types import InstructionType
 
 
 @pytest.mark.skip_debug()
@@ -34,7 +34,7 @@ ENTRYPOINT ["sleep", "20"]"""
     assert instructions[4]["type"] == InstructionType.RUN
     assert instructions[4]["args"][0] == "npm install"
 
-    # E2B defaults appended
+    # Moru defaults appended
     assert instructions[5]["type"] == InstructionType.USER
     assert instructions[5]["args"][0] == "user"
 

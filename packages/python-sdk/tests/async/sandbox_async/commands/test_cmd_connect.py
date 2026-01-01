@@ -1,6 +1,6 @@
 import pytest
 
-from e2b import NotFoundException, AsyncSandbox
+from moru import NotFoundException, AsyncSandbox
 
 
 async def test_connect_to_process(async_sandbox: AsyncSandbox):

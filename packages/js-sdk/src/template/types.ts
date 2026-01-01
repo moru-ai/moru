@@ -48,15 +48,15 @@ export type BasicBuildOptions = {
 }
 
 /**
- * Authentication options for E2B API.
+ * Authentication options for Moru API.
  */
 export type AuthOptions = {
   /**
-   * E2B API key for authentication.
+   * Moru API key for authentication.
    */
   apiKey?: string
   /**
-   * Domain of the E2B API.
+   * Domain of the Moru API.
    */
   domain?: string
 }
@@ -181,7 +181,7 @@ export interface TemplateFromImage {
   fromBunImage(variant?: string): TemplateBuilder
 
   /**
-   * Start from E2B's default base image (e2bdev/base:latest).
+   * Start from Moru's default base image.
    *
    * @example
    * ```ts
@@ -212,8 +212,8 @@ export interface TemplateFromImage {
   ): TemplateBuilder
 
   /**
-   * Start from an existing E2B template.
-   * @param template E2B template ID or alias
+   * Start from an existing Moru template.
+   * @param template Moru template ID or alias
    *
    * @example
    * ```ts
@@ -602,7 +602,7 @@ export interface TemplateBuilder {
    * )
    *
    * // Using ReadyCmd helpers
-   * import { waitForPort, waitForURL } from 'e2b'
+   * import { waitForPort, waitForURL } from 'moru'
    *
    * template.setStartCmd(
    *   'python -m http.server 8000',
@@ -630,7 +630,7 @@ export interface TemplateBuilder {
    * template.setReadyCmd('curl http://localhost:8000/health')
    *
    * // Using ReadyCmd helpers
-   * import { waitForPort, waitForFile, waitForProcess } from 'e2b'
+   * import { waitForPort, waitForFile, waitForProcess } from 'moru'
    *
    * template.setReadyCmd(waitForPort(3000))
    *

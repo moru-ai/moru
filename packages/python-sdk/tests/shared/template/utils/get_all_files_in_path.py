@@ -1,7 +1,7 @@
 import os
 import tempfile
 import pytest
-from e2b.template.utils import get_all_files_in_path
+from moru.template.utils import get_all_files_in_path
 
 
 class TestGetAllFilesInPath:

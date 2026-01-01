@@ -38,8 +38,8 @@ export default defineWorkspace([
         // https://playwright.dev
       },
       provide: {
-        E2B_API_KEY: process.env.E2B_API_KEY || env.parsed?.E2B_API_KEY,
-        E2B_DOMAIN: process.env.E2B_DOMAIN || env.parsed?.E2B_DOMAIN,
+        MORU_API_KEY: process.env.MORU_API_KEY || env.parsed?.MORU_API_KEY,
+        MORU_DOMAIN: process.env.MORU_DOMAIN || env.parsed?.MORU_DOMAIN,
       },
     },
   },
@@ -62,7 +62,7 @@ export default defineWorkspace([
     test: {
       include: ['tests/template/**/*.test.ts'],
       globals: false,
-      testTimeout: 180_000,
+      testTimeout: 300_000,
       environment: 'node',
     },
   },

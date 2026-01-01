@@ -1,6 +1,6 @@
 import pytest
 
-from e2b import AsyncSandbox
+from moru import AsyncSandbox
 
 
 @pytest.mark.skip_debug()

@@ -3,7 +3,7 @@ import { asLocalRelative, asPrimary } from '../../../utils/format'
 import { GeneratedFiles, Language, languageDisplay } from './types'
 import { generatePythonCode, generateTypeScriptCode } from './handlebars'
 import { writeFileContent } from './file-utils'
-import { TemplateClass } from 'e2b'
+import { TemplateClass } from '@moru-ai/core'
 
 /**
  * Generate and write template files for a given language

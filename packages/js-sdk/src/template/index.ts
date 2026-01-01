@@ -42,12 +42,12 @@ import {
 } from './utils'
 
 /**
- * Base class for building E2B sandbox templates.
+ * Base class for building Moru sandbox templates.
  */
 export class TemplateBase
   implements TemplateFromImage, TemplateBuilder, TemplateFinal
 {
-  private defaultBaseImage: string = 'e2bdev/base'
+  private defaultBaseImage: string = 'ghcr.io/moru-ai/base'
   private baseImage: string | undefined = this.defaultBaseImage
   private baseTemplate: string | undefined = undefined
   private registryConfig: RegistryConfig | undefined = undefined
@@ -88,18 +88,18 @@ export class TemplateBase
 
   /**
    * Convert a template to Dockerfile format.
-   * Note: Templates based on other E2B templates cannot be converted to Dockerfile.
+   * Note: Templates based on other Moru templates cannot be converted to Dockerfile.
    *
    * @param template The template to convert
    * @returns Dockerfile string representation
-   * @throws Error if the template is based on another E2B template
+   * @throws Error if the template is based on another Moru template
    */
   static toDockerfile(template: TemplateClass): string {
     return (template as TemplateBase).toDockerfile()
   }
 
   /**
-   * Build and deploy a template to E2B infrastructure.
+   * Build and deploy a template to Moru infrastructure.
    *
    * @param template The template to build
    * @param options Build configuration options
@@ -149,7 +149,7 @@ export class TemplateBase
   }
 
   /**
-   * Build and deploy a template to E2B infrastructure.
+   * Build and deploy a template to Moru infrastructure.
    *
    * @param template The template to build
    * @param options Build configuration options
@@ -804,17 +804,17 @@ export class TemplateBase
    * Convert the template to Dockerfile format.
    *
    * Note: Only templates based on Docker images can be converted to Dockerfile.
-   * Templates based on other E2B templates cannot be converted because they
+   * Templates based on other Moru templates cannot be converted because they
    * may use features not available in standard Dockerfiles.
    *
    * @returns Dockerfile string representation
-   * @throws Error if template is based on another E2B template or has no base image
+   * @throws Error if template is based on another Moru template or has no base image
    */
   private toDockerfile(): string {
     if (this.baseTemplate !== undefined) {
       throw new Error(
         'Cannot convert template built from another template to Dockerfile. ' +
-          'Templates based on other templates can only be built using the E2B API.'
+          'Templates based on other templates can only be built using the Moru API.'
       )
     }
 
@@ -851,7 +851,7 @@ export class TemplateBase
   /**
    * Internal implementation of the template build process.
    *
-   * @param client API client for communicating with E2B backend
+   * @param client API client for communicating with Moru backend
    * @param options Build configuration options
    * @throws BuildError if the build fails
    */
@@ -1046,14 +1046,14 @@ export class TemplateBase
 }
 
 /**
- * Create a new E2B template builder instance.
+ * Create a new Moru template builder instance.
  *
  * @param options Optional configuration for the template builder
  * @returns A new template builder instance
  *
  * @example
  * ```ts
- * import { Template } from 'e2b'
+ * import { Template } from 'moru'
  *
  * const template = Template()
  *   .fromPythonImage('3')

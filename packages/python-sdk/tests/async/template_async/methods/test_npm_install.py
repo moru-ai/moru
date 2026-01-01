@@ -1,6 +1,6 @@
 import pytest
 
-from e2b import AsyncTemplate
+from moru import AsyncTemplate
 
 
 @pytest.mark.skip_debug()

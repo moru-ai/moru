@@ -154,7 +154,7 @@ describe('allowPublicTraffic=false', () => {
       // Test 2: Request with valid traffic access token should succeed
       const response2 = await fetch(sandboxUrl, {
         headers: {
-          'e2b-traffic-access-token': sandbox.trafficAccessToken,
+          'moru-traffic-access-token': sandbox.trafficAccessToken,
         },
       })
       assert.equal(response2.status, 200)

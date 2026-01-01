@@ -2,7 +2,7 @@ import pytest
 
 from asyncio import Event
 
-from e2b import (
+from moru import (
     NotFoundException,
     AsyncSandbox,
     FilesystemEvent,

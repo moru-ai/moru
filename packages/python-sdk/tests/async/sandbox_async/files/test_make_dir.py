@@ -1,6 +1,6 @@
 import uuid
 
-from e2b import AsyncSandbox
+from moru import AsyncSandbox
 
 
 async def test_make_directory(async_sandbox: AsyncSandbox):

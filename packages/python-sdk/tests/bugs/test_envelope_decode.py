@@ -1,8 +1,8 @@
-from e2b.sandbox.commands.command_handle import CommandExitException
+from moru.sandbox.commands.command_handle import CommandExitException
 
 import pytest
 
-from e2b import Sandbox
+from moru import Sandbox
 
 
 class Desktop(Sandbox):

@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import * as http from 'http'
 import * as open from 'open'
 import * as path from 'path'
-import * as e2b from 'e2b'
+import * as moru from '@moru-ai/core'
 
 import { pkg } from 'src'
 import {
@@ -15,7 +15,7 @@ import {
 } from 'src/user'
 import { asBold, asFormattedConfig, asFormattedError } from 'src/utils/format'
 import { connectionConfig } from 'src/api'
-import { handleE2BRequestError } from '../../utils/errors'
+import { handleMoruRequestError } from '../../utils/errors'
 
 export const loginCommand = new commander.Command('login')
   .description('log in to CLI')
@@ -31,7 +31,7 @@ export const loginCommand = new commander.Command('login')
       console.log(
         `\nAlready logged in. ${asFormattedConfig(
           userConfig
-        )}.\n\nIf you want to log in as a different user, log out first by running 'e2b auth logout'.\nTo change the team, run 'e2b auth configure'.\n`
+        )}.\n\nIf you want to log in as a different user, log out first by running 'moru auth logout'.\nTo change the team, run 'moru auth configure'.\n`
       )
       return
     } else if (!userConfig) {
@@ -43,19 +43,19 @@ export const loginCommand = new commander.Command('login')
       }
 
       const accessToken =
-        process.env.E2B_ACCESS_TOKEN || signInResponse.accessToken
+        process.env.MORU_ACCESS_TOKEN || signInResponse.accessToken
 
       const signal = connectionConfig.getSignal()
-      const config = new e2b.ConnectionConfig({
+      const config = new moru.ConnectionConfig({
         accessToken,
       })
-      const client = new e2b.ApiClient(config)
+      const client = new moru.ApiClient(config)
       const res = await client.api.GET('/teams', { signal })
 
-      handleE2BRequestError(res, 'Error getting teams')
+      handleMoruRequestError(res, 'Error getting teams')
 
       const defaultTeam = res.data.find(
-        (team: e2b.components['schemas']['Team']) => team.isDefault
+        (team: moru.components['schemas']['Team']) => team.isDefault
       )
       if (!defaultTeam) {
         console.error(

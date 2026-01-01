@@ -10,7 +10,7 @@ export const defaultHeaders = {
   lang: 'js',
   lang_version: runtimeVersion,
   package_version: version,
-  publisher: 'e2b',
+  publisher: 'moru',
   sdk_runtime: runtime,
   system: platform.os?.family || 'unknown',
 }

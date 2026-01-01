@@ -2,12 +2,12 @@ import * as commander from 'commander'
 
 import { ensureAPIKey } from 'src/api'
 import { asBold } from 'src/utils/format'
-import * as e2b from 'e2b'
-import { Sandbox, components } from 'e2b'
+import * as moru from '@moru-ai/core'
+import { Sandbox, components } from '@moru-ai/core'
 import { parseMetadata } from './utils'
 
 async function killSandbox(sandboxID: string, apiKey: string) {
-  const killed = await e2b.Sandbox.kill(sandboxID, { apiKey })
+  const killed = await moru.Sandbox.kill(sandboxID, { apiKey })
   if (killed) {
     console.log(`Sandbox ${asBold(sandboxID)} has been killed`)
   } else {

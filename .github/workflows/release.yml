@@ -99,19 +99,19 @@ jobs:
       - name: Check JavasScript SDK Release
         id: js
         run: |
-          IS_RELEASE=$(./.github/scripts/is_release_for_package.sh "e2b")
+          IS_RELEASE=$(./.github/scripts/is_release_for_package.sh "@moru-ai/core")
           echo "release=$IS_RELEASE" >> "$GITHUB_OUTPUT"
 
       - name: Check Python SDK Release
         id: python
         run: |
-          IS_RELEASE=$(./.github/scripts/is_release_for_package.sh "@e2b/python-sdk")
+          IS_RELEASE=$(./.github/scripts/is_release_for_package.sh "moru")
           echo "release=$IS_RELEASE" >> "$GITHUB_OUTPUT"
 
       - name: Check CLI Release
         id: cli
         run: |
-          IS_RELEASE=$(./.github/scripts/is_release_for_package.sh "@e2b/cli")
+          IS_RELEASE=$(./.github/scripts/is_release_for_package.sh "@moru-ai/cli")
           echo "release=$IS_RELEASE" >> "$GITHUB_OUTPUT"
 
   python-tests:

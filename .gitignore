@@ -2,6 +2,7 @@ vale-styles
 .vercel
 .vscode
 .DS_Store
+.claude/settings.local.json
 
 # Logs
 logs
@@ -46,6 +47,7 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+.pnpm-store/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/

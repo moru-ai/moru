@@ -1,4 +1,4 @@
-import { Template } from 'e2b'
+import { Template } from '@moru-ai/core'
 
 export const template = Template()
   .fromImage('node:18')

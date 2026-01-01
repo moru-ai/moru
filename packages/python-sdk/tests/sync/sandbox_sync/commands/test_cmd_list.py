@@ -1,4 +1,4 @@
-from e2b import Sandbox
+from moru import Sandbox
 
 
 def test_kill_process(sandbox: Sandbox):

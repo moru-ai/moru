@@ -1,16 +1,16 @@
 import status from 'statuses'
 
 /**
- * Thrown when a request to E2B API occurs.
+ * Thrown when a request to Moru API fails.
  */
-export class E2BRequestError extends Error {
+export class MoruRequestError extends Error {
   constructor(message: any) {
     super(message)
-    this.name = 'E2BRequestError'
+    this.name = 'MoruRequestError'
   }
 }
 
-export function handleE2BRequestError<T>(
+export function handleMoruRequestError<T>(
   res: {
     data?: T | null | undefined
     error?: { code: number; message: string }
@@ -44,7 +44,7 @@ export function handleE2BRequestError<T>(
       break
   }
 
-  throw new E2BRequestError(
+  throw new MoruRequestError(
     `${errMsg && `${errMsg}: `}[${code}] ${message && `${message}: `}${
       res.error?.message ?? 'no message'
     }`

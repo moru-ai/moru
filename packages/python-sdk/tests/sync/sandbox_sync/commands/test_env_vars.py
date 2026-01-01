@@ -1,6 +1,6 @@
 import pytest
 
-from e2b import Sandbox
+from moru import Sandbox
 
 
 def test_command_envs(sandbox: Sandbox):

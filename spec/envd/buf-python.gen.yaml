@@ -3,11 +3,11 @@
 version: v1
 plugins:
   - plugin: python
-    out: ../../packages/python-sdk/e2b/envd
+    out: ../../packages/python-sdk/moru/envd
     opt:
-      - pyi_out=../../packages/python-sdk/e2b/envd
+      - pyi_out=../../packages/python-sdk/moru/envd
   - name: connect-python
-    out: ../../packages/python-sdk/e2b/envd
+    out: ../../packages/python-sdk/moru/envd
     path: protoc-gen-connect-python
 
 managed:

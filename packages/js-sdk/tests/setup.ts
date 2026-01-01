@@ -31,7 +31,7 @@ function buildTemplate(
   onBuildLogs?: (logEntry: LogEntry) => void
 ) {
   return Template.build(template, {
-    alias: options?.alias || `e2b-test-${randomUUID()}`,
+    alias: options?.alias || `moru-test-${randomUUID()}`,
     cpuCount: 1,
     memoryMB: 1024,
     skipCache: options?.skipCache,
@@ -84,8 +84,8 @@ export const buildTemplateTest = base.extend<BuildTemplateFixture>({
   ],
 })
 
-export const isDebug = process.env.E2B_DEBUG !== undefined
-export const isIntegrationTest = process.env.E2B_INTEGRATION_TEST !== undefined
+export const isDebug = process.env.MORU_DEBUG !== undefined
+export const isIntegrationTest = process.env.MORU_INTEGRATION_TEST !== undefined
 
 function generateRandomString(length: number = 8): string {
   return Math.random()

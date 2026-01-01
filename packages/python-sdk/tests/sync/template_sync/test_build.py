@@ -4,7 +4,7 @@ import pytest
 import os
 import shutil
 
-from e2b import Template, wait_for_timeout, default_build_logger
+from moru import Template, wait_for_timeout, default_build_logger
 
 
 @pytest.fixture(scope="module")

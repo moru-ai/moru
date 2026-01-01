@@ -6,16 +6,16 @@ import * as path from 'path'
 
 import { asFormattedSandboxTemplate, asLocalRelative } from 'src/utils/format'
 
-export const configName = 'e2b.toml'
+export const configName = 'moru.toml'
 
-function getConfigHeader(config: E2BConfig) {
-  return `# This is a config for E2B sandbox template.
+function getConfigHeader(config: MoruConfig) {
+  return `# This is a config for Moru sandbox template.
 # You can use template ID (${config.template_id}) ${
     config.template_name ? `or template name (${config.template_name}) ` : ''
   }to create a sandbox:
 
 # Python SDK
-# from e2b import Sandbox, AsyncSandbox
+# from moru import Sandbox, AsyncSandbox
 # sandbox = Sandbox.create("${
     config.template_name || config.template_id
   }") # Sync sandbox
@@ -24,7 +24,7 @@ function getConfigHeader(config: E2BConfig) {
   }") # Async sandbox
 
 # JS SDK
-# import { Sandbox } from 'e2b'
+# import { Sandbox } from '@moru-ai/core'
 # const sandbox = await Sandbox.create('${
     config.template_name || config.template_id
   }')
@@ -43,7 +43,7 @@ export const configSchema = yup.object({
   team_id: yup.string().optional(),
 })
 
-export type E2BConfig = yup.InferType<typeof configSchema>
+export type MoruConfig = yup.InferType<typeof configSchema>
 
 interface Migration {
   from: string
@@ -82,12 +82,12 @@ export async function loadConfig(configPath: string) {
   const config = toml.parse(tomlRaw)
   const migratedConfig = applyMigrations(config, migrations)
 
-  return (await configSchema.validate(migratedConfig)) as E2BConfig
+  return (await configSchema.validate(migratedConfig)) as MoruConfig
 }
 
 export async function saveConfig(
   configPath: string,
-  config: E2BConfig,
+  config: MoruConfig,
   overwrite?: boolean
 ) {
   try {
@@ -108,7 +108,7 @@ export async function saveConfig(
     await fsPromise.writeFile(configPath, getConfigHeader(config) + tomlRaw)
   } catch (err: any) {
     throw new Error(
-      `E2B sandbox template config ${asFormattedSandboxTemplate(
+      `Moru sandbox template config ${asFormattedSandboxTemplate(
         {
           templateID: config.template_id,
         },

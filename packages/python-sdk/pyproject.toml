@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "e2b"
-version = "2.9.0"
-description = "E2B SDK that give agents cloud environments"
-authors = ["e2b <hello@e2b.dev>"]
+name = "moru"
+version = "0.1.0"
+description = "Moru SDK that gives agents cloud environments"
+authors = ["Moru AI <hello@moru.ai>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://e2b.dev/"
-repository = "https://github.com/e2b-dev/e2b/tree/main/packages/python-sdk"
-packages = [{ include = "e2b" }, { include = "e2b_connect" }]
+homepage = "https://github.com/moru-ai/sdks"
+repository = "https://github.com/moru-ai/sdks/tree/main/packages/python-sdk"
+packages = [{ include = "moru" }, { include = "moru_connect" }]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -38,9 +38,9 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.urls]
-"Bug Tracker" = "https://github.com/e2b-dev/e2b/issues"
+"Bug Tracker" = "https://github.com/moru-ai/sdks/issues"
 
 [tool.ruff]
 exclude = [
-    "e2b/envd/filesystem/filesystem_pb2.py"
+    "moru/envd/filesystem/filesystem_pb2.py"
 ]
