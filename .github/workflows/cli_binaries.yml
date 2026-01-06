@@ -1,0 +1,99 @@
+name: CLI Binaries
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build-binaries:
+    name: Build CLI binaries (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            targets: "linux-x64 linux-arm64"
+          - os: macos-latest
+            targets: "darwin-x64 darwin-arm64"
+          - os: windows-latest
+            targets: "win-x64"
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Parse .tool-versions
+        uses: wistia/parse-tool-versions@v2.1.1
+        with:
+          filename: '.tool-versions'
+          uppercase: 'true'
+          prefix: 'tool_version_'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '${{ env.TOOL_VERSION_PNPM }}'
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: '${{ env.TOOL_VERSION_NODEJS }}'
+          cache: pnpm
+
+      - name: Configure pnpm
+        run: |
+          pnpm config set auto-install-peers true
+          pnpm config set exclude-links-from-lockfile true
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Build CLI bundle
+        working-directory: packages/cli
+        run: pnpm build
+
+      - name: Compile CLI binaries
+        working-directory: packages/cli
+        shell: bash
+        env:
+          VERSION: ${{ github.event.release.tag_name }}
+          BUN_TARGETS: ${{ matrix.targets }}
+        run: bash ./scripts/build-binaries.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: moru-${{ matrix.os }}-binaries
+          path: packages/cli/dist/bin/*
+
+  publish-assets:
+    name: Publish CLI binaries
+    needs: [build-binaries]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Prepare release assets
+        shell: bash
+        run: |
+          mkdir -p release-assets
+          find artifacts -type f -name "moru-*" -exec cp {} release-assets/ \;
+          cd release-assets
+          sha256sum moru-* > SHA256SUMS
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.release.tag_name }}
+          files: release-assets/*
