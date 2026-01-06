@@ -17,8 +17,10 @@ export default defineConfig({
   ),
   esbuildOptions: (options) => {
     options.legalComments = 'none'
+    options.loader = {
+      ...(options.loader ?? {}),
+      '.hbs': 'text',
+    }
     return options
   },
-  // Copy template files to dist
-  onSuccess: 'cp -r src/templates dist/',
 })

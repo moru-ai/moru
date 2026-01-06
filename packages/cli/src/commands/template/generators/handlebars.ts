@@ -1,13 +1,17 @@
 import { Template, TemplateClass } from '@moru-ai/core'
-import * as fs from 'fs'
 import HandlebarsLib from 'handlebars'
-import * as path from 'path'
 import {
   GeneratedFiles,
   Language,
   TemplateJSON,
   TemplateWithStepsJSON,
 } from './types'
+import typescriptTemplateSource from '../../../templates/typescript-template.hbs'
+import typescriptBuildSource from '../../../templates/typescript-build.hbs'
+import pythonTemplateSource from '../../../templates/python-template.hbs'
+import pythonBuildAsyncSource from '../../../templates/python-build-async.hbs'
+import pythonBuildSyncSource from '../../../templates/python-build-sync.hbs'
+import readmeTemplateSource from '../../../templates/readme.hbs'
 
 class Handlebars {
   private handlebars: typeof HandlebarsLib
@@ -116,19 +120,8 @@ export async function generateTypeScriptCode(
   const transformedData = await transformTemplateData(template)
 
   // Load and compile templates
-  // In dist, templates are at dist/templates/, __dirname is dist/
-  const templatesDir = path.join(__dirname, 'templates')
-  const templateSource = fs.readFileSync(
-    path.join(templatesDir, 'typescript-template.hbs'),
-    'utf8'
-  )
-  const buildSource = fs.readFileSync(
-    path.join(templatesDir, 'typescript-build.hbs'),
-    'utf8'
-  )
-
-  const generateTemplateSource = hb.compile(templateSource)
-  const generateBuildSource = hb.compile(buildSource)
+  const generateTemplateSource = hb.compile(typescriptTemplateSource)
+  const generateBuildSource = hb.compile(typescriptBuildSource)
 
   // Generate content
   const templateData = {
@@ -163,16 +156,8 @@ export async function generatePythonCode(
   const transformedData = await transformTemplateData(template)
 
   // Load and compile templates
-  // In dist, templates are at dist/templates/, __dirname is dist/
-  const templatesDir = path.join(__dirname, 'templates')
-  const templateSource = fs.readFileSync(
-    path.join(templatesDir, 'python-template.hbs'),
-    'utf8'
-  )
-  const buildSource = fs.readFileSync(
-    path.join(templatesDir, `python-build-${isAsync ? 'async' : 'sync'}.hbs`),
-    'utf8'
-  )
+  const templateSource = pythonTemplateSource
+  const buildSource = isAsync ? pythonBuildAsyncSource : pythonBuildSyncSource
 
   const generateTemplateSource = hb.compile(templateSource)
   const generateBuildSource = hb.compile(buildSource)
@@ -206,13 +191,7 @@ export async function generateReadmeContent(
   const hb = new Handlebars()
 
   // Load and compile README template
-  const templatesDir = path.join(__dirname, 'templates')
-  const readmeSource = fs.readFileSync(
-    path.join(templatesDir, 'readme.hbs'),
-    'utf8'
-  )
-
-  const generateReadmeSource = hb.compile(readmeSource)
+  const generateReadmeSource = hb.compile(readmeTemplateSource)
 
   // Prepare template data
   const templateData = {
