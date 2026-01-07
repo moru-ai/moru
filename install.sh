@@ -124,9 +124,40 @@ fi
 mv "$TMP_DIR/$FILENAME" "$DEST"
 chmod +x "$DEST" || true
 
+echo "moru installed to $DEST"
+
+# Auto-configure shell PATH if not already present
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
-  echo "moru installed to $DEST"
-  echo "Add $INSTALL_DIR to your PATH to use it globally."
-else
-  echo "moru installed to $DEST"
+  # Detect shell and appropriate config file
+  SHELL_CONFIG=""
+  if [[ -n "$ZSH_VERSION" ]] || [[ "$SHELL" == *"zsh"* ]]; then
+    SHELL_CONFIG="$HOME/.zshrc"
+  elif [[ -n "$BASH_VERSION" ]] || [[ "$SHELL" == *"bash"* ]]; then
+    # Prefer .bash_profile on macOS, .bashrc on Linux
+    if [[ "$OS" == "darwin" ]] && [[ -f "$HOME/.bash_profile" ]]; then
+      SHELL_CONFIG="$HOME/.bash_profile"
+    else
+      SHELL_CONFIG="$HOME/.bashrc"
+    fi
+  fi
+
+  # Add PATH to shell config if detected
+  if [[ -n "$SHELL_CONFIG" ]]; then
+    PATH_EXPORT="export PATH=\"\$HOME/.local/bin:\$PATH\""
+
+    # Check if PATH is already configured in the file
+    if [[ -f "$SHELL_CONFIG" ]] && grep -q "\.local/bin" "$SHELL_CONFIG" 2>/dev/null; then
+      echo "PATH already configured in $SHELL_CONFIG"
+    else
+      echo "" >> "$SHELL_CONFIG"
+      echo "# Added by moru installer" >> "$SHELL_CONFIG"
+      echo "$PATH_EXPORT" >> "$SHELL_CONFIG"
+      echo "✓ Added $INSTALL_DIR to PATH in $SHELL_CONFIG"
+      echo "  Run 'source $SHELL_CONFIG' or restart your shell to use moru"
+    fi
+  else
+    echo "⚠ Could not detect shell config file."
+    echo "  Add $INSTALL_DIR to your PATH manually:"
+    echo "  export PATH=\"\$HOME/.local/bin:\$PATH\""
+  fi
 fi
