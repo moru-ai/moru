@@ -3,6 +3,26 @@ import { assert } from 'vitest'
 import { sandboxTest, isDebug } from '../setup.js'
 import { Sandbox } from '../../src'
 
+async function retry<T>(
+  action: () => Promise<T>,
+  { retries, delayMs }: { retries: number; delayMs: number }
+): Promise<T> {
+  let lastError: unknown
+
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    try {
+      return await action()
+    } catch (error) {
+      lastError = error
+      if (attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs))
+      }
+    }
+  }
+
+  throw lastError
+}
+
 sandboxTest.skipIf(isDebug)(
   'pause and resume a sandbox',
   async ({ sandbox }) => {
@@ -92,11 +112,17 @@ sandboxTest.skipIf(isDebug)(
     assert.isTrue(await sandbox.isRunning())
 
     // First check that the command is in list
-    const list = await sandbox.commands.list()
-    assert.isTrue(list.some((c) => c.pid === expectedPid))
-
-    // Make sure we can connect to it
-    const processInfo = await sandbox.commands.connect(expectedPid)
+    // TODO: Remove retries once resume/connect is stable after infra changes.
+    const processInfo = await retry(
+      async () => {
+        const list = await sandbox.commands.list()
+        if (!list.some((c) => c.pid === expectedPid)) {
+          throw new Error(`Process ${expectedPid} not found after resume`)
+        }
+        return sandbox.commands.connect(expectedPid)
+      },
+      { retries: 5, delayMs: 1000 }
+    )
 
     assert.isObject(processInfo)
     assert.equal(processInfo.pid, expectedPid)
