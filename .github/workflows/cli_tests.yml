@@ -67,3 +67,16 @@ jobs:
         working-directory: ./packages/cli
         env:
           MORU_API_KEY: ${{ secrets.MORU_API_KEY }}
+
+      - name: Setup bun (for binary compilation)
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Test binary compilation
+        working-directory: ./packages/cli
+        shell: bash
+        env:
+          VERSION: "test"
+          BUN_TARGETS: ${{ runner.os == 'Linux' && 'linux-x64' || 'win-x64' }}
+        run: bash ./scripts/build-binaries.sh
