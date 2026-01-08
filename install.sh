@@ -126,38 +126,93 @@ chmod +x "$DEST" || true
 
 echo "moru installed to $DEST"
 
-# Auto-configure shell PATH if not already present
-if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
-  # Detect shell and appropriate config file
-  SHELL_CONFIG=""
-  if [[ "$SHELL" == *"zsh"* ]]; then
-    SHELL_CONFIG="$HOME/.zshrc"
-  elif [[ "$SHELL" == *"bash"* ]]; then
-    # Prefer .bash_profile on macOS, .bashrc on Linux
-    if [[ "$OS" == "darwin" ]] && [[ -f "$HOME/.bash_profile" ]]; then
-      SHELL_CONFIG="$HOME/.bash_profile"
-    else
-      SHELL_CONFIG="$HOME/.bashrc"
-    fi
+# Auto-configure shell PATH
+# Detect the user's shell from $SHELL environment variable
+CURRENT_SHELL="$(basename "$SHELL")"
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+
+# Define potential config files for each shell
+case "$CURRENT_SHELL" in
+  fish)
+    CONFIG_FILES=(
+      "$HOME/.config/fish/config.fish"
+      "$XDG_CONFIG_HOME/fish/config.fish"
+    )
+    ;;
+  zsh)
+    CONFIG_FILES=(
+      "$HOME/.zshrc"
+      "$HOME/.zshenv"
+      "$XDG_CONFIG_HOME/zsh/.zshrc"
+      "$XDG_CONFIG_HOME/zsh/.zshenv"
+    )
+    ;;
+  bash)
+    CONFIG_FILES=(
+      "$HOME/.bashrc"
+      "$HOME/.bash_profile"
+      "$HOME/.profile"
+      "$XDG_CONFIG_HOME/bash/.bashrc"
+      "$XDG_CONFIG_HOME/bash/.bash_profile"
+    )
+    ;;
+  *)
+    # Unknown shell, try common bash configs
+    CONFIG_FILES=(
+      "$HOME/.bashrc"
+      "$HOME/.bash_profile"
+      "$HOME/.profile"
+    )
+    ;;
+esac
+
+# Find first existing config file
+SHELL_CONFIG=""
+for config_file in "${CONFIG_FILES[@]}"; do
+  if [[ -f "$config_file" ]]; then
+    SHELL_CONFIG="$config_file"
+    break
   fi
+done
 
-  # Add PATH to shell config if detected
-  if [[ -n "$SHELL_CONFIG" ]]; then
-    PATH_EXPORT="export PATH=\"\$HOME/.local/bin:\$PATH\""
+# If no config file exists, create the default one
+if [[ -z "$SHELL_CONFIG" ]]; then
+  case "$CURRENT_SHELL" in
+    fish)
+      SHELL_CONFIG="$HOME/.config/fish/config.fish"
+      mkdir -p "$(dirname "$SHELL_CONFIG")"
+      ;;
+    zsh)
+      SHELL_CONFIG="$HOME/.zshrc"
+      ;;
+    bash)
+      SHELL_CONFIG="$HOME/.bashrc"
+      ;;
+    *)
+      SHELL_CONFIG="$HOME/.bashrc"
+      ;;
+  esac
+fi
 
-    # Check if PATH is already configured in the file
-    if [[ -f "$SHELL_CONFIG" ]] && grep -q "\.local/bin" "$SHELL_CONFIG" 2>/dev/null; then
-      echo "PATH already configured in $SHELL_CONFIG"
-    else
+# Check if PATH is already configured in the config file
+if [[ -f "$SHELL_CONFIG" ]] && grep -q "Added by moru installer" "$SHELL_CONFIG" 2>/dev/null; then
+  echo "✓ PATH already configured in $SHELL_CONFIG"
+else
+  # Add PATH to shell config based on shell type
+  case "$CURRENT_SHELL" in
+    fish)
       echo "" >> "$SHELL_CONFIG"
       echo "# Added by moru installer" >> "$SHELL_CONFIG"
-      echo "$PATH_EXPORT" >> "$SHELL_CONFIG"
+      echo "fish_add_path $INSTALL_DIR" >> "$SHELL_CONFIG"
       echo "✓ Added $INSTALL_DIR to PATH in $SHELL_CONFIG"
       echo "  Run 'source $SHELL_CONFIG' or restart your shell to use moru"
-    fi
-  else
-    echo "⚠ Could not detect shell config file."
-    echo "  Add $INSTALL_DIR to your PATH manually:"
-    echo "  export PATH=\"\$HOME/.local/bin:\$PATH\""
-  fi
+      ;;
+    zsh|bash|*)
+      echo "" >> "$SHELL_CONFIG"
+      echo "# Added by moru installer" >> "$SHELL_CONFIG"
+      echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> "$SHELL_CONFIG"
+      echo "✓ Added $INSTALL_DIR to PATH in $SHELL_CONFIG"
+      echo "  Run 'source $SHELL_CONFIG' or restart your shell to use moru"
+      ;;
+  esac
 fi
