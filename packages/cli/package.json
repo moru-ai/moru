@@ -45,7 +45,8 @@
     "test:coverage": "vitest run --coverage",
     "check-deps": "knip",
     "update-deps": "ncu -u && pnpm i",
-    "generate-ref": "./scripts/generate_sdk_ref.sh"
+    "generate-ref": "./scripts/generate_sdk_ref.sh",
+    "postPublish": "./scripts/post-publish.sh || true"
   },
   "devDependencies": {
     "@types/command-exists": "^1.2.3",
