@@ -87,6 +87,8 @@ jobs:
         env:
           MORU_API_KEY: ${{ secrets.MORU_API_KEY }}
         run: |
+          set -x  # Enable debug mode
+
           # Determine binary path (VERSION="test" creates "moru-vtest-{target}" files)
           if [ "${{ runner.os }}" = "Windows" ]; then
             BINARY="./dist/bin/moru-vtest-win-x64.exe"
@@ -103,14 +105,25 @@ jobs:
 
           # Test actual sandbox creation (critical for catching Bun runtime issues)
           echo "Testing sandbox create command..."
+          set +e  # Don't exit on error yet
           OUTPUT=$("$BINARY" sandbox create base --timeout 30 2>&1)
+          EXIT_CODE=$?
+          set -e
+
+          echo "Exit code: $EXIT_CODE"
+          echo "Output:"
           echo "$OUTPUT"
+
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "ERROR: Binary exited with code $EXIT_CODE"
+            exit 1
+          fi
 
           # Extract sandbox ID from output
           SANDBOX_ID=$(echo "$OUTPUT" | grep -oE 'i[a-z0-9]{23}' | head -1)
 
           if [ -z "$SANDBOX_ID" ]; then
-            echo "Failed to create sandbox"
+            echo "ERROR: Failed to extract sandbox ID from output"
             exit 1
           fi
 
