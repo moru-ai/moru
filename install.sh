@@ -45,8 +45,12 @@ if [[ -z "$VERSION" ]]; then
     | sed -E 's/.*"([^"]+)".*/\1/')"
 fi
 
-VERSION="${VERSION#v}"
-TAG="v${VERSION}"
+# Store original tag for download URL
+TAG="${VERSION}"
+
+# Extract version number (supports both v0.3.3 and @moru-ai/cli@0.3.3 formats)
+VERSION="${VERSION##*@}"  # Remove package name prefix if present
+VERSION="${VERSION#v}"     # Remove v prefix if present
 
 UNAME_S="$(uname -s)"
 case "$UNAME_S" in
@@ -70,7 +74,7 @@ case "$UNAME_M" in
 esac
 
 TARGET="${OS}-${ARCH}"
-FILENAME="moru-${TAG}-${TARGET}"
+FILENAME="moru-v${VERSION}-${TARGET}"
 if [[ "$OS" == "win" ]]; then
   FILENAME="${FILENAME}.exe"
 fi
