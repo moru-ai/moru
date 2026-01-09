@@ -10,6 +10,9 @@ if [[ ! -f dist/index.js ]]; then
 fi
 
 RAW_VERSION="${VERSION:-$(node -p "require('./package.json').version")}"
+# Strip package name prefix (e.g., @moru-ai/cli@ from @moru-ai/cli@0.3.3)
+RAW_VERSION="${RAW_VERSION##*@}"
+# Strip v prefix if present
 RAW_VERSION="${RAW_VERSION#v}"
 OUTPUT_VERSION="v${RAW_VERSION}"
 
