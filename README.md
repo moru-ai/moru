@@ -15,45 +15,82 @@
 
 Moru provides isolated cloud sandboxes for AI agents that need full computer access—like [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)—to run commands, write files, and execute code.
 
-## Installation
+## Quick Start
 
-### JavaScript / TypeScript
+### 1. Create an Account
 
+Sign up for a free account at [moru.io/dashboard](https://moru.io/dashboard).
+
+### 2. Get Your API Key
+
+1. Go to the [API Keys tab](https://moru.io/dashboard?tab=keys) in your dashboard
+2. Click **Create API Key**
+3. Copy your new API key
+
+### 3. Install the SDK
+
+**JavaScript / TypeScript:**
 ```bash
 npm install @moru-ai/core
 ```
 
-### Python
-
+**Python:**
 ```bash
 pip install moru
 ```
 
-## Quick Start
-
-### 1. Set your API key
+### 4. Set Your API Key
 
 ```bash
 export MORU_API_KEY=your_api_key
 ```
 
-### 2. Create a sandbox
+### 5. Create a Sandbox and Run Commands
 
-JavaScript / TypeScript:
+**JavaScript / TypeScript:**
 ```ts
-import { Sandbox } from '@moru-ai/core'
+import Sandbox from '@moru-ai/core'
 
+// Create a sandbox using the 'base' template (default)
 const sandbox = await Sandbox.create()
-await sandbox.runCode('print("Hello from Moru!")')
-await sandbox.close()
+console.log(`Sandbox created: ${sandbox.sandboxId}`)
+
+// Run a command
+const result = await sandbox.commands.run("echo 'Hello from Moru!'")
+console.log(`Output: ${result.stdout}`)
+
+// Clean up
+await sandbox.kill()
 ```
 
-Python:
+**Python:**
 ```python
 from moru import Sandbox
 
-with Sandbox() as sandbox:
-    sandbox.run_code('print("Hello from Moru!")')
+# Create a sandbox using the 'base' template (default)
+sandbox = Sandbox.create()
+print(f"Sandbox created: {sandbox.sandbox_id}")
+
+# Run a command
+result = sandbox.commands.run("echo 'Hello from Moru!'")
+print(f"Output: {result.stdout}")
+
+# Clean up
+sandbox.kill()
+```
+
+### Using a Custom Template
+
+You can specify a custom template when creating a sandbox. Create templates via the [dashboard](https://moru.io/dashboard) or CLI.
+
+```python
+# Python
+sandbox = Sandbox.create("my-template")
+```
+
+```ts
+// JavaScript
+const sandbox = await Sandbox.create("my-template")
 ```
 
 ## Packages

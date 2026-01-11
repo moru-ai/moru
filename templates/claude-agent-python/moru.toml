@@ -1,0 +1,18 @@
+# Claude Agent SDK Template
+# Pre-installed with Python 3.11, Node.js 20, and claude-agent-python-sdk
+#
+# Python SDK
+# from moru import Sandbox, AsyncSandbox
+# sandbox = Sandbox("claude-agent-python")
+# sandbox = await AsyncSandbox.create("claude-agent-python")
+#
+# JS SDK
+# import { Sandbox } from '@moru-ai/core'
+# const sandbox = await Sandbox.create('claude-agent-python')
+
+team_id = "79d0b373-31b1-4185-b633-67ddb67bc0f9"
+memory_mb = 1024
+cpu_count = 1
+dockerfile = "moru.Dockerfile"
+template_name = "claude-agent-python"
+template_id = "w6ela1k5qr8omctuuhic"

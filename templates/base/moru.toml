@@ -10,8 +10,9 @@
 # import { Sandbox } from '@moru-ai/core'
 # const sandbox = await Sandbox.create('base')
 
-team_id = "460355b3-4f64-48f9-9a16-4442817f79f5"
+team_id = "79d0b373-31b1-4185-b633-67ddb67bc0f9"
 memory_mb = 512
+cpu_count = 1
 dockerfile = "moru.Dockerfile"
 template_name = "base"
-template_id = "rki5dems9wqfm4r03t7g"
+template_id = "32u2qcnygu3zemwfe3rb"
