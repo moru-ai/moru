@@ -62,6 +62,17 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Update CLI version from release tag
+        working-directory: packages/cli
+        shell: bash
+        run: |
+          TAG="${{ inputs.tag || github.event.release.tag_name }}"
+          VERSION="${TAG##*@}"
+          VERSION="${VERSION#v}"
+          echo "Updating CLI version to $VERSION"
+          npm pkg set version="$VERSION"
+          cat package.json | grep '"version"'
+
       - name: Build CLI bundle
         working-directory: packages/cli
         run: pnpm build
