@@ -81,7 +81,7 @@ sandbox.kill()
 
 ### Using a Custom Template
 
-You can specify a custom template when creating a sandbox. Create templates via the [dashboard](https://moru.io/dashboard) or CLI.
+You can specify a custom template when creating a sandbox. See the [templates documentation](https://moru.io/docs/templates/overview) for how to create templates.
 
 ```python
 # Python
@@ -100,6 +100,10 @@ This monorepo contains:
 - `packages/js-sdk` - JavaScript/TypeScript SDK
 - `packages/python-sdk` - Python SDK
 - `packages/cli` - Command-line interface
+
+## Documentation
+
+For more information, visit [moru.io/docs](https://moru.io/docs).
 
 ## Acknowledgement
 
