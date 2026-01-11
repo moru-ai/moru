@@ -1,10 +1,19 @@
-# Moru SDK
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/moru-ai/.github/main/logo/moru-logo-white.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/moru-ai/.github/main/logo/moru-logo.svg">
+    <img alt="Moru" src="https://raw.githubusercontent.com/moru-ai/.github/main/logo/moru-logo.svg" width="200">
+  </picture>
+</p>
 
-Moru SDK provides cloud environments for AI agents. Run AI-generated code in secure isolated sandboxes in the cloud.
+<p align="center">
+  <b>Open-source cloud infrastructure for AI agents.</b><br>
+  Give your AI agents a full Linux computer to work with.
+</p>
 
-## What is Moru?
+---
 
-Moru (Korean: 모루, meaning "anvil") is an open-source infrastructure that allows you to run AI-generated code in secure isolated sandboxes in the cloud. Use our JavaScript SDK or Python SDK to start and control sandboxes.
+Moru provides isolated cloud sandboxes for AI agents that need full computer access—like [Claude Agent SDK](https://docs.anthropic.com/en/docs/agents-and-tools/claude-agent-sdk)—to run commands, write files, and execute code.
 
 ## Installation
 
