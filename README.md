@@ -8,12 +8,12 @@
 
 <p align="center">
   <b>Open-source cloud infrastructure for AI agents.</b><br>
-  Give your AI agents a full Linux computer to work with.
+  Give your AI agents a full Linux VM to work with.
 </p>
 
 ---
 
-Moru provides isolated cloud sandboxes for AI agents that need full computer access—like [Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)—to run commands, write files, and execute code.
+Moru provides isolated VMs for AI agents to run commands, write files, and execute code
 
 ## Quick Start
 
