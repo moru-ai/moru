@@ -79,6 +79,10 @@ print(f"Output: {result.stdout}")
 sandbox.kill()
 ```
 
+### 6. View Sandbox Logs in the Dashboard
+
+After running your sandbox, you can view logs, monitor activity, and debug issues from the [Sandboxes tab](https://moru.io/dashboard?tab=sandboxes) in your dashboard.
+
 ### Using a Custom Template
 
 You can specify a custom template when creating a sandbox. See the [templates documentation](https://moru.io/docs/templates/overview) for how to create templates.
