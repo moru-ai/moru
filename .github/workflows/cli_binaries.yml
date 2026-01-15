@@ -16,6 +16,10 @@ permissions:
 jobs:
   build-binaries:
     name: Build CLI binaries (${{ matrix.os }})
+    # Only run for CLI releases, skip for JS SDK or Python SDK releases
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.release.tag_name, '@moru-ai/cli@')
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false

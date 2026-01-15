@@ -184,9 +184,26 @@ download_with_progress() {
 download_file() {
     local url="$1"
     local output="$2"
+    local message="${3:-Downloading...}"
 
-    if [[ "${OS:-}" == "win" ]] || ! [[ -t 2 ]] || ! download_with_progress "$url" "$output" 2>/dev/null; then
-        curl -# -L -o "$output" "$url" 2>&1 || curl -fsSL -o "$output" "$url"
+    # Windows: always use silent curl
+    if [[ "${OS:-}" == "win" ]]; then
+        curl -fsSL -o "$output" "$url"
+        return
+    fi
+
+    # Try advanced progress bar in TTY environment
+    if [[ -t 1 ]] && download_with_progress "$url" "$output" 2>/dev/null; then
+        return
+    fi
+
+    # Fallback: download with spinner
+    start_spinner "$message"
+    if curl -fsSL -o "$output" "$url"; then
+        stop_spinner
+    else
+        stop_spinner
+        return 1
     fi
 }
 
@@ -298,9 +315,10 @@ ASSET_URL="https://github.com/${REPO}/releases/download/${TAG}/${FILENAME}"
 SUMS_URL="https://github.com/${REPO}/releases/download/${TAG}/SHA256SUMS"
 
 # Step 2: Download binary
-echo -e "${CYAN}${ARROW_DOWN}${NC} Downloading ${FILENAME}..."
-download_file "$ASSET_URL" "$TMP_DIR/$FILENAME"
-printf "\r${GREEN}${CHECKMARK}${NC} Downloaded ${FILENAME}     \n"
+if ! download_file "$ASSET_URL" "$TMP_DIR/$FILENAME" "Downloading ${FILENAME}..."; then
+    print_error "Failed to download ${FILENAME}"
+fi
+spinner_success "Downloaded ${FILENAME}"
 
 # Step 3: Verify checksum
 start_spinner "Verifying checksum..."
