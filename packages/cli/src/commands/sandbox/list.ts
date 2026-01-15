@@ -103,7 +103,13 @@ function renderTable(runs: SandboxRun[], status?: SandboxRunStatus[]) {
     },
   })
 
-  const sortedRuns = runs
+  // Sort by original timestamps before formatting for display
+  const sortedRuns = [...runs]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime() ||
+        a.sandboxID.localeCompare(b.sandboxID)
+    )
     .map((run) => ({
       ...run,
       alias: run.alias || '-',
@@ -112,11 +118,6 @@ function renderTable(runs: SandboxRun[], status?: SandboxRunStatus[]) {
       createdAt: new Date(run.createdAt).toLocaleString(),
       endedAt: run.endedAt ? new Date(run.endedAt).toLocaleString() : '-',
     }))
-    .sort(
-      (a, b) =>
-        b.createdAt.localeCompare(a.createdAt) ||
-        a.sandboxID.localeCompare(b.sandboxID)
-    )
 
   for (const run of sortedRuns) {
     const rowColor = run.status === 'running' ? 'green' : undefined
