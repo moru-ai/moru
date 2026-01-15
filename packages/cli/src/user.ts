@@ -15,9 +15,7 @@ export interface UserConfig {
 }
 
 export const USER_CONFIG_PATH = path.join(os.homedir(), '.moru', 'config.json') // TODO: Keep in Keychain
-export const DOCS_BASE =
-  process.env.MORU_DOCS_BASE ||
-  `https://${process.env.MORU_DOMAIN || 'moru.io'}/docs`
+export const MORU_DOMAIN = process.env.MORU_DOMAIN || 'moru.io'
 
 export function getUserConfig(): UserConfig | null {
   if (!fs.existsSync(USER_CONFIG_PATH)) return null

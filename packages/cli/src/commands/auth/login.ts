@@ -8,7 +8,7 @@ import * as moru from '@moru-ai/core'
 
 import { pkg } from 'src'
 import {
-  DOCS_BASE,
+  MORU_DOMAIN,
   getUserConfig,
   USER_CONFIG_PATH,
   UserConfig,
@@ -93,7 +93,7 @@ interface SignInWithBrowserResponse {
 async function signInWithBrowser(): Promise<SignInWithBrowserResponse> {
   const server = http.createServer()
   const { port } = await listen.default(server, 0, '127.0.0.1')
-  const loginUrl = new URL(`${DOCS_BASE}/api/cli`)
+  const loginUrl = new URL(`https://${MORU_DOMAIN}/auth/cli`)
   loginUrl.searchParams.set('next', `http://localhost:${port}`)
   loginUrl.searchParams.set('cliVersion', pkg.version)
 
@@ -101,7 +101,7 @@ async function signInWithBrowser(): Promise<SignInWithBrowserResponse> {
     server.once('request', (req, res) => {
       // Close the HTTP connection to prevent `server.close()` from hanging
       res.setHeader('connection', 'close')
-      const followUpUrl = new URL(`${DOCS_BASE}/api/cli`)
+      const followUpUrl = new URL(`https://${MORU_DOMAIN}/auth/cli`)
       const searchParams = new URL(req.url || '/', 'http://localhost')
         .searchParams
       const searchParamsObj = Object.fromEntries(
