@@ -4,7 +4,6 @@ set -euo pipefail
 REPO="moru-ai/moru"
 INSTALL_DIR=""
 VERSION=""
-TOTAL_STEPS=5
 
 # =============================================================================
 # Color codes with terminal detection
@@ -29,31 +28,63 @@ fi
 if [[ "${LANG:-}" == *UTF-8* ]] || [[ "${LC_ALL:-}" == *UTF-8* ]] || [[ "${LC_CTYPE:-}" == *UTF-8* ]]; then
     PROGRESS_FILLED='■'
     PROGRESS_EMPTY='･'
+    SPINNER_FRAMES=('⠋' '⠙' '⠹' '⠸' '⠼' '⠴' '⠦' '⠧' '⠇' '⠏')
+    CHECKMARK='✓'
+    ARROW_DOWN='↓'
 else
     PROGRESS_FILLED='#'
     PROGRESS_EMPTY='-'
+    SPINNER_FRAMES=('-' '\' '|' '/')
+    CHECKMARK='*'
+    ARROW_DOWN='>'
 fi
+
+SPINNER_PID=""
 
 # =============================================================================
 # Helper functions
 # =============================================================================
-print_step() {
-    local step_num=$1
-    local message=$2
-    echo -e "${MUTED}[${step_num}/${TOTAL_STEPS}]${NC} ${message}"
-}
-
-print_info() {
-    echo -e "      ${MUTED}$1${NC}"
-}
-
-print_success() {
-    echo -e "      ${GREEN}$1${NC}"
-}
-
 print_error() {
+    stop_spinner
     echo -e "${RED}error:${NC} $1" >&2
     exit 1
+}
+
+# Spinner functions
+start_spinner() {
+    local message="$1"
+    [[ -t 1 ]] || return 0
+
+    printf "\033[?25l"  # Hide cursor
+
+    (
+        local i=0
+        while true; do
+            printf "\r${CYAN}%s${NC} %s" "${SPINNER_FRAMES[$i]}" "$message"
+            i=$(( (i + 1) % ${#SPINNER_FRAMES[@]} ))
+            sleep 0.08
+        done
+    ) &
+    SPINNER_PID=$!
+}
+
+stop_spinner() {
+    [[ -n "$SPINNER_PID" ]] && kill "$SPINNER_PID" 2>/dev/null && wait "$SPINNER_PID" 2>/dev/null || true
+    SPINNER_PID=""
+    printf "\033[?25h"  # Show cursor
+}
+
+# Complete a spinner with success
+spinner_success() {
+    local message="$1"
+    stop_spinner
+    printf "\r${GREEN}${CHECKMARK}${NC} %s\n" "$message"
+}
+
+# Complete a spinner with the current state (no checkmark)
+spinner_done() {
+    stop_spinner
+    printf "\r\033[K"  # Clear line
 }
 
 # Print progress bar
@@ -163,13 +194,8 @@ download_file() {
 print_completion() {
     local version="$1"
     echo ""
-    echo -e "  ${GREEN}Installation complete!${NC}"
-    echo ""
-    echo -e "  ${BOLD}moru${NC} ${MUTED}v${version}${NC} installed to ${MUTED}${DEST}${NC}"
-    echo ""
-    echo -e "  Run ${CYAN}${BOLD}moru auth login${NC} to get started."
-    echo ""
-    echo -e "  ${MUTED}Documentation: https://moru.io/docs${NC}"
+    echo -e "${GREEN}Installation complete!${NC} ${MUTED}(v${version})${NC}"
+    echo -e "Run ${CYAN}${BOLD}moru auth login${NC} to get started."
     echo ""
 }
 
@@ -220,7 +246,7 @@ echo -e "${BOLD}Installing moru CLI${NC}"
 echo ""
 
 # Step 1: Fetch version
-print_step 1 "Fetching latest version..."
+start_spinner "Fetching latest version..."
 if [[ -z "$VERSION" ]]; then
     VERSION="$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" \
         | grep -E '"tag_name":' \
@@ -231,7 +257,7 @@ fi
 TAG="${VERSION}"
 VERSION="${VERSION##*@}"
 VERSION="${VERSION#v}"
-print_info "Found version: v${VERSION}"
+spinner_success "Found version v${VERSION}"
 
 # Detect OS
 UNAME_S="$(uname -s)"
@@ -263,6 +289,7 @@ fi
 # Prepare temp directory
 TMP_DIR="$(mktemp -d)"
 cleanup() {
+    stop_spinner
     rm -rf "$TMP_DIR"
 }
 trap cleanup EXIT
@@ -271,11 +298,12 @@ ASSET_URL="https://github.com/${REPO}/releases/download/${TAG}/${FILENAME}"
 SUMS_URL="https://github.com/${REPO}/releases/download/${TAG}/SHA256SUMS"
 
 # Step 2: Download binary
-print_step 2 "Downloading ${FILENAME}..."
+echo -e "${CYAN}${ARROW_DOWN}${NC} Downloading ${FILENAME}..."
 download_file "$ASSET_URL" "$TMP_DIR/$FILENAME"
+printf "\r${GREEN}${CHECKMARK}${NC} Downloaded ${FILENAME}     \n"
 
 # Step 3: Verify checksum
-print_step 3 "Verifying checksum..."
+start_spinner "Verifying checksum..."
 curl -fsSL "$SUMS_URL" -o "$TMP_DIR/SHA256SUMS"
 
 EXPECTED_SUM="$(grep " ${FILENAME}$" "$TMP_DIR/SHA256SUMS" | awk '{print $1}')"
@@ -294,10 +322,10 @@ fi
 if [[ "$EXPECTED_SUM" != "$ACTUAL_SUM" ]]; then
     print_error "Checksum verification failed."
 fi
-print_info "Checksum verified"
+spinner_success "Checksum verified"
 
 # Step 4: Install binary
-print_step 4 "Installing binary..."
+start_spinner "Installing binary..."
 if [[ -z "$INSTALL_DIR" ]]; then
     if [[ "$OS" == "win" ]]; then
         INSTALL_DIR="${LOCALAPPDATA:-$HOME/AppData/Local}/moru/bin"
@@ -314,10 +342,10 @@ fi
 
 mv "$TMP_DIR/$FILENAME" "$DEST"
 chmod +x "$DEST" || true
-print_info "Installed to ${DEST}"
+spinner_success "Installed to ${DEST}"
 
 # Step 5: Configure shell PATH
-print_step 5 "Configuring shell PATH..."
+start_spinner "Configuring shell PATH..."
 CURRENT_SHELL="$(basename "$SHELL")"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 
@@ -381,22 +409,21 @@ if [[ -z "$SHELL_CONFIG" ]]; then
 fi
 
 if [[ -f "$SHELL_CONFIG" ]] && grep -q "Added by moru installer" "$SHELL_CONFIG" 2>/dev/null; then
-    print_info "PATH already configured in ${SHELL_CONFIG}"
+    spinner_success "PATH already configured"
 else
     case "$CURRENT_SHELL" in
         fish)
             echo "" >> "$SHELL_CONFIG"
             echo "# Added by moru installer" >> "$SHELL_CONFIG"
             echo "fish_add_path $INSTALL_DIR" >> "$SHELL_CONFIG"
-            print_info "Added ${INSTALL_DIR} to PATH in ${SHELL_CONFIG}"
             ;;
         zsh|bash|*)
             echo "" >> "$SHELL_CONFIG"
             echo "# Added by moru installer" >> "$SHELL_CONFIG"
             echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> "$SHELL_CONFIG"
-            print_info "Added ${INSTALL_DIR} to PATH in ${SHELL_CONFIG}"
             ;;
     esac
+    spinner_success "Added to PATH in ${SHELL_CONFIG}"
 fi
 
 # Print completion banner
