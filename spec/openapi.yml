@@ -206,6 +206,53 @@ components:
         - running
         - paused
 
+    SandboxRunStatus:
+      type: string
+      description: Status of a sandbox run
+      enum:
+        - running
+        - paused
+        - stopped
+
+    SandboxRunEndReason:
+      type: string
+      description: Reason the sandbox stopped
+      enum:
+        - killed
+        - timeout
+        - error
+        - shutdown
+
+    SandboxRun:
+      type: object
+      required:
+        - sandboxID
+        - templateID
+        - status
+        - createdAt
+      properties:
+        sandboxID:
+          type: string
+          description: Unique sandbox identifier
+        templateID:
+          type: string
+          description: Template used to create the sandbox
+        alias:
+          type: string
+          description: Template alias
+        status:
+          $ref: "#/components/schemas/SandboxRunStatus"
+        endReason:
+          $ref: "#/components/schemas/SandboxRunEndReason"
+        createdAt:
+          type: string
+          format: date-time
+          description: When the sandbox was created
+        endedAt:
+          type: string
+          format: date-time
+          description: When the sandbox stopped
+
     EnvVars:
       additionalProperties:
         type: string
@@ -255,7 +302,7 @@ components:
     SandboxLogEntry:
       required:
         - timestamp
-        - level
+        - eventType
         - message
         - fields
       properties:
@@ -266,8 +313,8 @@ components:
         message:
           type: string
           description: Log message content
-        level:
-          $ref: "#/components/schemas/LogLevel"
+        eventType:
+          $ref: "#/components/schemas/SandboxLogEventType"
         fields:
           type: object
           additionalProperties:
@@ -1013,12 +1060,21 @@ components:
 
     LogLevel:
       type: string
-      description: State of the sandbox
+      description: Log level for build logs
       enum:
         - debug
         - info
         - warn
         - error
+
+    SandboxLogEventType:
+      type: string
+      description: Type of sandbox log event
+      enum:
+        - stdout
+        - stderr
+        - process_start
+        - process_end
 
     BuildLogEntry:
       required:
@@ -1732,6 +1788,43 @@ paths:
         "500":
           $ref: "#/components/responses/500"
 
+  /v2/sandbox-runs:
+    get:
+      description: List sandbox runs (including stopped/historical)
+      tags: [sandboxes]
+      security:
+        - ApiKeyAuth: []
+        - Supabase1TokenAuth: []
+          Supabase2TeamAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter runs by one or more statuses
+          required: false
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/SandboxRunStatus"
+          style: form
+          explode: false
+        - $ref: "#/components/parameters/paginationNextToken"
+        - $ref: "#/components/parameters/paginationLimit"
+      responses:
+        "200":
+          description: List of sandbox runs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SandboxRun"
+        "401":
+          $ref: "#/components/responses/401"
+        "400":
+          $ref: "#/components/responses/400"
+        "500":
+          $ref: "#/components/responses/500"
+
   /sandboxes/metrics:
     get:
       description: List metrics for given sandboxes
@@ -1777,7 +1870,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/sandboxID"
         - in: query
-          name: start
+          name: cursor
           schema:
             type: integer
             format: int64
@@ -1786,11 +1879,21 @@ paths:
         - in: query
           name: limit
           schema:
-            default: 1000
+            default: 100
+            type: integer
             format: int32
             minimum: 0
-            type: integer
+            maximum: 100
           description: Maximum number of logs that should be returned
+        - in: query
+          name: direction
+          schema:
+            $ref: "#/components/schemas/LogsDirection"
+        - in: query
+          name: eventType
+          description: Filter by event type (stdout or stderr). If not specified, returns all logs.
+          schema:
+            $ref: "#/components/schemas/SandboxLogEventType"
       responses:
         "200":
           description: Successfully returned the sandbox logs

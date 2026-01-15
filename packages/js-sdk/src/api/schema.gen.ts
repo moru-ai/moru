@@ -203,10 +203,13 @@ export interface paths {
         get: {
             parameters: {
                 query?: {
+                    /** @description Starting timestamp of the logs that should be returned in milliseconds */
+                    cursor?: number;
+                    direction?: components["schemas"]["LogsDirection"];
+                    /** @description Filter by event type (stdout or stderr). If not specified, returns all logs. */
+                    eventType?: components["schemas"]["SandboxLogEventType"];
                     /** @description Maximum number of logs that should be returned */
                     limit?: number;
-                    /** @description Starting timestamp of the logs that should be returned in milliseconds */
-                    start?: number;
                 };
                 header?: never;
                 path: {
@@ -1680,10 +1683,10 @@ export interface components {
             timestamp: string;
         };
         SandboxLogEntry: {
+            eventType: components["schemas"]["SandboxLogEventType"];
             fields: {
                 [key: string]: string;
             };
-            level: components["schemas"]["LogLevel"];
             /** @description Log message content */
             message: string;
             /**
@@ -1692,6 +1695,11 @@ export interface components {
              */
             timestamp: string;
         };
+        /**
+         * @description Type of sandbox log event
+         * @enum {string}
+         */
+        SandboxLogEventType: "stdout" | "stderr" | "process_start" | "process_end";
         SandboxLogs: {
             /** @description Structured logs of the sandbox */
             logEntries: components["schemas"]["SandboxLogEntry"][];
