@@ -83,7 +83,42 @@ sandbox.kill()
 
 After running your sandbox, you can view logs, monitor activity, and debug issues from the [Sandboxes tab](https://moru.io/dashboard?tab=sandboxes) in your dashboard.
 
-### Using a Custom Template
+## CLI Quick Start
+
+You can also use the Moru CLI to create and manage sandboxes directly from your terminal.
+
+### Install CLI
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/moru-ai/moru/main/install.sh | bash
+```
+
+### Login
+
+```bash
+moru auth login
+```
+
+### Create Sandbox and Run Command
+
+```bash
+# Run a command in an ephemeral sandbox (creates, executes, destroys)
+moru sandbox run base echo "Hello from Moru!"
+```
+
+### List Sandboxes
+
+```bash
+moru sandbox list
+```
+
+### View Logs
+
+```bash
+moru sandbox logs <id>
+```
+
+## Using a Custom Template
 
 You can specify a custom template when creating a sandbox. See the [templates documentation](https://moru.io/docs/templates/overview) for how to create templates.
 
