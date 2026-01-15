@@ -23,6 +23,8 @@ Moru provides isolated VMs for AI agents to run commands, write files, and execu
 curl -fsSL https://moru.io/cli/install.sh | bash
 ```
 
+### Hello world
+
 ```bash
 # Login
 moru auth login
