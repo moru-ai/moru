@@ -1,6 +1,7 @@
 import * as boxen from 'boxen'
 import * as moru from '@moru-ai/core'
 
+import * as packageJSON from '../package.json'
 import { getUserConfig, UserConfig } from './user'
 import { asBold, asPrimary } from './utils/format'
 
@@ -86,5 +87,9 @@ const userConfig = getUserConfig()
 export const connectionConfig = new moru.ConnectionConfig({
   accessToken: process.env.MORU_ACCESS_TOKEN || userConfig?.accessToken,
   apiKey: process.env.MORU_API_KEY || userConfig?.teamApiKey,
+  headers: {
+    'x-moru-client': 'cli',
+    'x-moru-cli-version': packageJSON.version,
+  },
 })
 export const client = new moru.ApiClient(connectionConfig)
