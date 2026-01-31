@@ -4,6 +4,7 @@ import { asPrimary } from 'src/utils/format'
 import { templateCommand } from './template'
 import { sandboxCommand } from './sandbox'
 import { authCommand } from './auth'
+import { volumeCommand } from './volume'
 
 export const program = new commander.Command()
   .enablePositionalOptions()
@@ -20,3 +21,4 @@ Visit ${asPrimary(
   .addCommand(authCommand)
   .addCommand(templateCommand)
   .addCommand(sandboxCommand)
+  .addCommand(volumeCommand)

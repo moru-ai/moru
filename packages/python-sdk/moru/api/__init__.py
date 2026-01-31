@@ -40,6 +40,10 @@ def handle_api_exception(
     default_exception_class: type[Exception] = SandboxException,
     stack_trace: Optional[TracebackType] = None,
 ):
+    # Success codes - no exception to return
+    if 200 <= e.status_code < 300:
+        return None
+
     try:
         body = json.loads(e.content) if e.content else {}
     except json.JSONDecodeError:

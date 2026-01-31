@@ -97,6 +97,9 @@ from .template.readycmd import (
 from .template.types import BuildInfo, CopyItem
 from .template_async.main import AsyncTemplate
 from .template_sync.main import Template
+from .volume.types import FileInfo as VolumeFileInfo, VolumeInfo
+from .volume_async.main import AsyncVolume
+from .volume_sync.main import Volume
 
 __all__ = [
     # API
@@ -171,4 +174,9 @@ __all__ = [
     "McpServer",
     "GitHubMcpServer",
     "GitHubMcpServerConfig",
+    # Volumes
+    "Volume",
+    "AsyncVolume",
+    "VolumeInfo",
+    "VolumeFileInfo",
 ]

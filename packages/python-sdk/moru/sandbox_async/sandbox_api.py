@@ -159,23 +159,32 @@ class SandboxApi(SandboxBase):
         secure: bool,
         mcp: Optional[McpServer] = None,
         network: Optional[SandboxNetworkOpts] = None,
+        volume_id: Optional[str] = None,
+        volume_mount_path: Optional[str] = None,
         **opts: Unpack[ApiParams],
     ) -> SandboxCreateResponse:
         config = ConnectionConfig(**opts)
 
         api_client = get_api_client(config)
+        new_sandbox = NewSandbox(
+            template_id=template,
+            auto_pause=auto_pause,
+            metadata=metadata or {},
+            timeout=timeout,
+            env_vars=env_vars or {},
+            mcp=mcp or UNSET,
+            secure=secure,
+            allow_internet_access=allow_internet_access,
+            network=SandboxNetworkConfig(**network) if network else UNSET,
+        )
+        # Add volume parameters if provided
+        if volume_id:
+            new_sandbox["volumeId"] = volume_id
+        if volume_mount_path:
+            new_sandbox["volumeMountPath"] = volume_mount_path
+
         res = await post_sandboxes.asyncio_detailed(
-            body=NewSandbox(
-                template_id=template,
-                auto_pause=auto_pause,
-                metadata=metadata or {},
-                timeout=timeout,
-                env_vars=env_vars or {},
-                mcp=mcp or UNSET,
-                secure=secure,
-                allow_internet_access=allow_internet_access,
-                network=SandboxNetworkConfig(**network) if network else UNSET,
-            ),
+            body=new_sandbox,
             client=api_client,
         )
 

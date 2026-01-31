@@ -67,6 +67,11 @@ import { Sandbox } from './sandbox'
 
 export default Sandbox
 
+export { Volume } from './volume'
+export type { FileInfo, VolumeInfo } from './volume'
+export { VolumeApi, validateMountPath, ALLOWED_MOUNT_PREFIXES } from './volume'
+export type { VolumeApiOpts } from './volume'
+
 export * from './template'
 
 export {

@@ -8,6 +8,7 @@ import { compareVersions } from 'compare-versions'
 import { NotFoundError, TemplateError } from '../errors'
 import { timeoutToSeconds } from '../utils'
 import type { McpServer as BaseMcpServer } from './mcp'
+import { validateMountPath } from '../volume'
 
 /**
  * Extended MCP server configuration that includes base servers
@@ -133,6 +134,19 @@ export interface SandboxOpts extends ConnectionOpts {
    * Sandbox URL. Used for local development
    */
   sandboxUrl?: string
+
+  /**
+   * Volume ID to attach to the sandbox.
+   * Requires `volumeMountPath` to be set.
+   */
+  volumeId?: string
+
+  /**
+   * Mount path for the volume inside the sandbox.
+   * Must start with one of: /workspace/, /data/, /mnt/, /volumes/
+   * Required when `volumeId` is provided.
+   */
+  volumeMountPath?: string
 }
 
 export type SandboxBetaCreateOpts = SandboxOpts & {
@@ -529,6 +543,14 @@ export class SandboxApi {
     timeoutMs: number,
     opts?: SandboxBetaCreateOpts
   ) {
+    // Validate volume parameters
+    if (opts?.volumeId && !opts?.volumeMountPath) {
+      throw new Error('volumeMountPath is required when volumeId is provided')
+    }
+    if (opts?.volumeMountPath) {
+      validateMountPath(opts.volumeMountPath)
+    }
+
     const config = new ConnectionConfig(opts)
     const client = new ApiClient(config)
 
@@ -543,6 +565,8 @@ export class SandboxApi {
         secure: opts?.secure ?? true,
         allow_internet_access: opts?.allowInternetAccess ?? true,
         network: opts?.network,
+        volumeId: opts?.volumeId,
+        volumeMountPath: opts?.volumeMountPath,
       },
       signal: config.getSignal(opts?.requestTimeoutMs),
     })

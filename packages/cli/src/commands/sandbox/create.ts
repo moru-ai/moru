@@ -9,6 +9,7 @@ import { getRoot } from '../../utils/filesystem'
 import { getConfigPath, loadConfig } from '../../config'
 import fs from 'fs'
 import { configOption, pathOption } from '../../options'
+import { validateMountPath } from '@moru-ai/core'
 
 /**
  * `moru sandbox create` - Create a sandbox
@@ -31,6 +32,8 @@ export function createCommand(
     )
     .option('-i, --interactive', 'keep stdin open')
     .option('-t, --tty', 'allocate a pseudo-TTY')
+    .option('--volume <id_or_name>', 'volume ID or name to attach')
+    .option('--volume-mount <path>', 'mount path for volume (required with --volume)')
     .addOption(pathOption)
     .addOption(configOption)
     .alias(alias)
@@ -43,6 +46,8 @@ export function createCommand(
           name?: string
           path?: string
           config?: string
+          volume?: string
+          volumeMount?: string
         }
       ) => {
         try {
@@ -81,9 +86,42 @@ export function createCommand(
             process.exit(1)
           }
 
+          // Validate volume options
+          if (opts.volume && !opts.volumeMount) {
+            console.error('Error: --volume-mount is required when --volume is specified')
+            process.exit(1)
+          }
+          if (opts.volumeMount && !opts.volume) {
+            console.error('Error: --volume is required when --volume-mount is specified')
+            process.exit(1)
+          }
+          if (opts.volumeMount) {
+            try {
+              validateMountPath(opts.volumeMount)
+            } catch (err: unknown) {
+              console.error(`Error: ${err instanceof Error ? err.message : err}`)
+              process.exit(1)
+            }
+          }
+
+          // Resolve volume ID if name was provided
+          let volumeId: string | undefined
+          if (opts.volume) {
+            const vol = await moru.Volume.get(opts.volume, { apiKey })
+            volumeId = vol.volumeId
+          }
+
           // Create the sandbox
-          const sandbox = await moru.Sandbox.create(templateID, { apiKey })
-          console.log(`Sandbox ${asPrimary(sandbox.sandboxId)} created`)
+          const sandbox = await moru.Sandbox.create(templateID, {
+            apiKey,
+            volumeId,
+            volumeMountPath: opts.volumeMount,
+          })
+          if (volumeId && opts.volumeMount) {
+            console.log(`Sandbox ${asPrimary(sandbox.sandboxId)} created (volume: ${volumeId} at ${opts.volumeMount})`)
+          } else {
+            console.log(`Sandbox ${asPrimary(sandbox.sandboxId)} created`)
+          }
 
           if (!isInteractive) {
             // Show helpful example commands

@@ -16,6 +16,7 @@ from moru.exceptions import SandboxException, format_request_timeout_error
 from moru.sandbox.main import SandboxOpts
 from moru.sandbox.sandbox_api import McpServer, SandboxMetrics, SandboxNetworkOpts
 from moru.sandbox.utils import class_method_variant
+from moru.volume.volume_api import validate_mount_path
 from moru.sandbox_sync.commands.command import Commands
 from moru.sandbox_sync.commands.pty import Pty
 from moru.sandbox_sync.filesystem.filesystem import Filesystem
@@ -151,6 +152,8 @@ class Sandbox(SandboxApi):
         allow_internet_access: bool = True,
         mcp: Optional[McpServer] = None,
         network: Optional[SandboxNetworkOpts] = None,
+        volume_id: Optional[str] = None,
+        volume_mount_path: Optional[str] = None,
         **opts: Unpack[ApiParams],
     ) -> Self:
         """
@@ -166,11 +169,23 @@ class Sandbox(SandboxApi):
         :param allow_internet_access: Allow sandbox to access the internet, defaults to `True`. If set to `False`, it works the same as setting network `deny_out` to `[0.0.0.0/0]`.
         :param mcp: MCP server to enable in the sandbox
         :param network: Sandbox network configuration
+        :param volume_id: Volume ID to attach (e.g., vol_abc123). Requires volume_mount_path.
+        :param volume_mount_path: Mount path inside sandbox. Required if volume_id is provided.
+            Must start with /workspace/, /data/, /mnt/, or /volumes/.
+            Note: Mounting overlays any existing files/directories at the mount path.
 
         :return: A Sandbox instance for the new sandbox
 
         Use this method instead of using the constructor to create a new sandbox.
         """
+        # Validate volume parameters
+        if volume_id and not volume_mount_path:
+            raise ValueError("volume_mount_path is required when volume_id is provided")
+        if volume_mount_path and not volume_id:
+            raise ValueError("volume_id is required when volume_mount_path is provided")
+        if volume_mount_path:
+            validate_mount_path(volume_mount_path)
+
         if not template and mcp is not None:
             template = cls.default_mcp_template
         elif not template:
@@ -186,6 +201,8 @@ class Sandbox(SandboxApi):
             allow_internet_access=allow_internet_access,
             mcp=mcp,
             network=network,
+            volume_id=volume_id,
+            volume_mount_path=volume_mount_path,
             **opts,
         )
 
@@ -672,6 +689,8 @@ class Sandbox(SandboxApi):
         allow_internet_access: bool,
         mcp: Optional[McpServer] = None,
         network: Optional[SandboxNetworkOpts] = None,
+        volume_id: Optional[str] = None,
+        volume_mount_path: Optional[str] = None,
         **opts: Unpack[ApiParams],
     ) -> Self:
         extra_sandbox_headers = {}
