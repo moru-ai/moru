@@ -1,5 +1,8 @@
 FROM python:3.11.6
 
+# Cache bust for SQLite + Litestream volume support - 2026-02-02
+ENV TEMPLATE_VERSION=20260202
+
 # Inspired by https://github.com/nodejs/docker-node/blob/main/20/bookworm/Dockerfile
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
   build-essential curl git util-linux \
@@ -66,3 +69,10 @@ RUN curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v
   && rm yarn-v$YARN_VERSION.tar.gz \
   # smoke test
   && yarn --version
+
+# Install Litestream for SQLite replication (volume metadata backend)
+ENV LITESTREAM_VERSION 0.3.13
+RUN curl -L https://github.com/benbjohnson/litestream/releases/download/v${LITESTREAM_VERSION}/litestream-v${LITESTREAM_VERSION}-linux-amd64.tar.gz | \
+    tar -xz -C /usr/local/bin/ && \
+    chmod +x /usr/local/bin/litestream && \
+    litestream version
