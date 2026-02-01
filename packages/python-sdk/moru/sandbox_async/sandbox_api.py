@@ -176,12 +176,9 @@ class SandboxApi(SandboxBase):
             secure=secure,
             allow_internet_access=allow_internet_access,
             network=SandboxNetworkConfig(**network) if network else UNSET,
+            volume_id=volume_id or UNSET,
+            volume_mount_path=volume_mount_path or UNSET,
         )
-        # Add volume parameters if provided
-        if volume_id:
-            new_sandbox["volumeId"] = volume_id
-        if volume_mount_path:
-            new_sandbox["volumeMountPath"] = volume_mount_path
 
         res = await post_sandboxes.asyncio_detailed(
             body=new_sandbox,

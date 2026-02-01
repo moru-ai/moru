@@ -713,6 +713,8 @@ class Sandbox(SandboxApi):
                 allow_internet_access=allow_internet_access,
                 mcp=mcp,
                 network=network,
+                volume_id=volume_id,
+                volume_mount_path=volume_mount_path,
                 **opts,
             )
 
