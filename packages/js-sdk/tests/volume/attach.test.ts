@@ -8,8 +8,7 @@ function uniqueVolumeName(): string {
   return `test-attach-${randomUUID().slice(0, 8)}`
 }
 
-// Skip: JuiceFS binary not yet in guest template - mount not working
-test.skip('sandbox with volume', async () => {
+test.skipIf(isDebug)('sandbox with volume', async () => {
   const name = uniqueVolumeName()
   const vol = await Volume.create({ name })
 
@@ -34,8 +33,7 @@ test.skip('sandbox with volume', async () => {
   }
 })
 
-// Skip: JuiceFS binary not yet in guest template - mount not working
-test.skip('sandbox volume file persistence', async () => {
+test.skipIf(isDebug)('sandbox volume file persistence', async () => {
   const name = uniqueVolumeName()
   const vol = await Volume.create({ name })
   const testContent = `test-content-${randomUUID().slice(0, 8)}`

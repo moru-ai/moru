@@ -99,6 +99,7 @@ async def test_volume_delete(unique_volume_name):
 
     # Get should fail with NotFoundError
     from moru.exceptions import NotFoundException
+
     with pytest.raises(NotFoundException):
         await AsyncVolume.get(vol.volume_id)
 

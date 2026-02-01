@@ -249,18 +249,29 @@ export class Volume {
    * Creates parent directories as needed. Works even while volume
    * is attached to a sandbox - changes are visible immediately.
    *
+   * For large files (>100MB), use ReadableStream to avoid loading
+   * the entire file into memory.
+   *
    * @param path Destination path in volume.
-   * @param content File content as Buffer or ArrayBuffer.
+   * @param content File content as Buffer, ArrayBuffer, or ReadableStream.
    * @param opts Connection options.
    *
    * @example
    * ```ts
+   * // Small file from string
    * await vol.upload('/data/input.csv', Buffer.from('col1,col2\n1,2\n'))
+   *
+   * // Large file streaming (Node.js)
+   * import { createReadStream } from 'fs'
+   * import { Readable } from 'stream'
+   * const nodeStream = createReadStream('/path/to/large-file.zip')
+   * const webStream = Readable.toWeb(nodeStream) as ReadableStream<Uint8Array>
+   * await vol.upload('/data/large-file.zip', webStream)
    * ```
    */
   async upload(
     path: string,
-    content: Buffer | ArrayBuffer,
+    content: Buffer | ArrayBuffer | ReadableStream<Uint8Array>,
     opts?: VolumeApiOpts
   ): Promise<void> {
     await VolumeApi.uploadFile(this.volumeId, path, content, {

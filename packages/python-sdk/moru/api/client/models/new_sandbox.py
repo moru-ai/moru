@@ -28,6 +28,9 @@ class NewSandbox:
         network (Union[Unset, SandboxNetworkConfig]):
         secure (Union[Unset, bool]): Secure all system communication with sandbox
         timeout (Union[Unset, int]): Time to live for the sandbox in seconds. Default: 15.
+        volume_id (Union[Unset, str]): Volume ID to attach (e.g., vol_abc123). Requires volumeMountPath.
+        volume_mount_path (Union[Unset, str]): Mount path inside sandbox (e.g., /workspace/data). Required if volumeId
+            is provided. Must start with /workspace/, /data/, /mnt/, or /volumes/.
     """
 
     template_id: str
@@ -39,6 +42,8 @@ class NewSandbox:
     network: Union[Unset, "SandboxNetworkConfig"] = UNSET
     secure: Union[Unset, bool] = UNSET
     timeout: Union[Unset, int] = 15
+    volume_id: Union[Unset, str] = UNSET
+    volume_mount_path: Union[Unset, str] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -70,6 +75,10 @@ class NewSandbox:
 
         timeout = self.timeout
 
+        volume_id = self.volume_id
+
+        volume_mount_path = self.volume_mount_path
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -93,6 +102,10 @@ class NewSandbox:
             field_dict["secure"] = secure
         if timeout is not UNSET:
             field_dict["timeout"] = timeout
+        if volume_id is not UNSET:
+            field_dict["volumeId"] = volume_id
+        if volume_mount_path is not UNSET:
+            field_dict["volumeMountPath"] = volume_mount_path
 
         return field_dict
 
@@ -140,6 +153,10 @@ class NewSandbox:
 
         timeout = d.pop("timeout", UNSET)
 
+        volume_id = d.pop("volumeId", UNSET)
+
+        volume_mount_path = d.pop("volumeMountPath", UNSET)
+
         new_sandbox = cls(
             template_id=template_id,
             allow_internet_access=allow_internet_access,
@@ -150,6 +167,8 @@ class NewSandbox:
             network=network,
             secure=secure,
             timeout=timeout,
+            volume_id=volume_id,
+            volume_mount_path=volume_mount_path,
         )
 
         new_sandbox.additional_properties = d

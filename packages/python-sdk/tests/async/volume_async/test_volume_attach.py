@@ -1,7 +1,13 @@
+import os
 import pytest
 import uuid
 
 from moru import AsyncSandbox, AsyncVolume
+
+
+# Use MORU_TEMPLATE env var or default to "base"
+# For local testing with JuiceFS, can set MORU_TEMPLATE=juicefs-vol-test-v2
+TEMPLATE = os.environ.get("MORU_TEMPLATE", "base")
 
 
 @pytest.fixture
@@ -21,12 +27,11 @@ async def volume(unique_volume_name):
         pass
 
 
-@pytest.mark.skip(reason="JuiceFS binary not yet in guest template - mount not working")
 @pytest.mark.skip_debug()
 async def test_sandbox_with_volume(volume):
     """Test creating a sandbox with a volume attached."""
     sbx = await AsyncSandbox.create(
-        "base",
+        TEMPLATE,
         volume_id=volume.volume_id,
         volume_mount_path="/workspace/data",
         timeout=60,
@@ -42,7 +47,6 @@ async def test_sandbox_with_volume(volume):
         await sbx.kill()
 
 
-@pytest.mark.skip(reason="JuiceFS binary not yet in guest template - mount not working")
 @pytest.mark.skip_debug()
 async def test_sandbox_volume_file_persistence(volume):
     """Test that files written to volume persist across sandbox restarts."""
@@ -50,7 +54,7 @@ async def test_sandbox_volume_file_persistence(volume):
 
     # Create first sandbox and write a file
     sbx1 = await AsyncSandbox.create(
-        "base",
+        TEMPLATE,
         volume_id=volume.volume_id,
         volume_mount_path="/workspace/data",
         timeout=60,
@@ -63,7 +67,7 @@ async def test_sandbox_volume_file_persistence(volume):
 
     # Create second sandbox and read the file
     sbx2 = await AsyncSandbox.create(
-        "base",
+        TEMPLATE,
         volume_id=volume.volume_id,
         volume_mount_path="/workspace/data",
         timeout=60,
@@ -82,7 +86,7 @@ async def test_sandbox_volume_invalid_mount_path(volume):
     """Test that invalid mount paths are rejected."""
     with pytest.raises(ValueError) as exc_info:
         await AsyncSandbox.create(
-            "base",
+            TEMPLATE,
             volume_id=volume.volume_id,
             volume_mount_path="/etc/passwd",  # Invalid - not an allowed prefix
             timeout=60,
@@ -96,7 +100,7 @@ async def test_sandbox_volume_missing_mount_path(volume):
     """Test that volume_id without mount_path is rejected."""
     with pytest.raises(ValueError) as exc_info:
         await AsyncSandbox.create(
-            "base",
+            TEMPLATE,
             volume_id=volume.volume_id,
             # Missing volume_mount_path
             timeout=60,

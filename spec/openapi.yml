@@ -93,6 +93,13 @@ components:
       required: false
       schema:
         type: string
+    volumeIdOrName:
+      name: volumeID
+      in: path
+      required: true
+      description: Volume ID (vol_xxx) or name
+      schema:
+        type: string
 
   responses:
     "400":
@@ -198,6 +205,101 @@ components:
       additionalProperties:
         type: string
         description: Metadata of the sandbox
+
+    # Volume schemas
+    CreateVolumeRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Volume name (unique per team, slug format)
+          pattern: "^[a-z][a-z0-9-]*[a-z0-9]$"
+
+    Volume:
+      type: object
+      required:
+        - volumeID
+        - name
+        - createdAt
+        - updatedAt
+      properties:
+        volumeID:
+          type: string
+          description: Unique volume identifier
+        name:
+          type: string
+          description: Volume name
+        totalSizeBytes:
+          type: integer
+          format: int64
+          description: Total size of files in volume (bytes)
+        totalFileCount:
+          type: integer
+          format: int64
+          description: Total number of files in volume
+        createdAt:
+          type: string
+          format: date-time
+          description: When the volume was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: When the volume was last updated
+
+    FileInfo:
+      type: object
+      required:
+        - name
+        - path
+        - type
+      properties:
+        name:
+          type: string
+          description: File or directory name
+        path:
+          type: string
+          description: Full path within volume
+        type:
+          type: string
+          enum: [file, directory]
+          description: Entry type
+        size:
+          type: integer
+          format: int64
+          description: File size in bytes (only for files)
+        modifiedAt:
+          type: string
+          format: date-time
+          description: Last modification time
+
+    FileListResponse:
+      type: object
+      required:
+        - files
+      properties:
+        files:
+          type: array
+          items:
+            $ref: "#/components/schemas/FileInfo"
+        nextToken:
+          type: string
+          description: Pagination token for next page
+
+    UploadResponse:
+      type: object
+      required:
+        - path
+        - size
+      properties:
+        path:
+          type: string
+          description: Path of uploaded file
+        size:
+          type: integer
+          format: int64
+          description: Size of uploaded file in bytes
 
     SandboxState:
       type: string
@@ -558,6 +660,12 @@ components:
           $ref: "#/components/schemas/EnvVars"
         mcp:
           $ref: "#/components/schemas/Mcp"
+        volumeId:
+          type: string
+          description: Volume ID to attach (e.g., vol_abc123). Requires volumeMountPath.
+        volumeMountPath:
+          type: string
+          description: Mount path inside sandbox (e.g., /workspace/data). Required if volumeId is provided. Must start with /workspace/, /data/, /mnt/, or /volumes/.
 
     ResumedSandbox:
       properties:
@@ -1561,6 +1669,7 @@ components:
 tags:
   - name: templates
   - name: sandboxes
+  - name: volumes
   - name: auth
   - name: access-tokens
   - name: api-keys
@@ -2752,6 +2861,281 @@ paths:
       responses:
         "204":
           description: Team API key deleted successfully
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  # Volume endpoints
+  /volumes:
+    post:
+      summary: Create volume (idempotent)
+      description: Create a new volume for persistent storage. Returns existing volume if name matches (idempotent).
+      operationId: postVolumes
+      tags: [volumes]
+      security:
+        - ApiKeyAuth: []
+        - Supabase1TokenAuth: []
+          Supabase2TeamAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVolumeRequest"
+      responses:
+        "200":
+          description: Existing volume returned (idempotent)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Volume"
+        "201":
+          description: New volume created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Volume"
+        "400":
+          $ref: "#/components/responses/400"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+    get:
+      summary: List volumes
+      description: List all volumes owned by the authenticated team.
+      operationId: getVolumes
+      tags: [volumes]
+      security:
+        - ApiKeyAuth: []
+        - Supabase1TokenAuth: []
+          Supabase2TeamAuth: []
+      parameters:
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationNextToken"
+      responses:
+        "200":
+          description: List of volumes
+          headers:
+            X-Next-Token:
+              description: Pagination token for next page
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Volume"
+        "401":
+          $ref: "#/components/responses/401"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /volumes/{volumeID}:
+    get:
+      summary: Get volume
+      description: Get volume details by ID (vol_xxx) or name.
+      operationId: getVolumesIdOrName
+      tags: [volumes]
+      security:
+        - ApiKeyAuth: []
+        - Supabase1TokenAuth: []
+          Supabase2TeamAuth: []
+      parameters:
+        - $ref: "#/components/parameters/volumeIdOrName"
+      responses:
+        "200":
+          description: Volume details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Volume"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+    delete:
+      summary: Delete volume
+      description: Delete a volume. Deletion proceeds regardless of active mounts.
+      operationId: deleteVolumesIdOrName
+      tags: [volumes]
+      security:
+        - ApiKeyAuth: []
+        - Supabase1TokenAuth: []
+          Supabase2TeamAuth: []
+      parameters:
+        - $ref: "#/components/parameters/volumeIdOrName"
+      responses:
+        "204":
+          description: Volume deletion started
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  # Volume File endpoints
+  /volumes/{volumeID}/files:
+    get:
+      summary: List files in volume
+      description: List files and directories at a path within the volume.
+      operationId: getVolumesVolumeIDFiles
+      tags: [volumes]
+      security:
+        - ApiKeyAuth: []
+        - Supabase1TokenAuth: []
+          Supabase2TeamAuth: []
+      parameters:
+        - name: volumeID
+          in: path
+          required: true
+          description: Volume ID (vol_xxx)
+          schema:
+            type: string
+        - name: path
+          in: query
+          description: Directory path to list
+          schema:
+            type: string
+            default: "/"
+        - $ref: "#/components/parameters/paginationLimit"
+        - $ref: "#/components/parameters/paginationNextToken"
+      responses:
+        "200":
+          description: File listing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FileListResponse"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+    delete:
+      summary: Delete file or directory
+      description: Delete a file or directory from the volume.
+      operationId: deleteVolumesVolumeIDFiles
+      tags: [volumes]
+      security:
+        - ApiKeyAuth: []
+        - Supabase1TokenAuth: []
+          Supabase2TeamAuth: []
+      parameters:
+        - name: volumeID
+          in: path
+          required: true
+          description: Volume ID (vol_xxx)
+          schema:
+            type: string
+        - name: path
+          in: query
+          required: true
+          description: Path to delete
+          schema:
+            type: string
+        - name: recursive
+          in: query
+          description: Delete directory recursively
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "204":
+          description: Deleted
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /volumes/{volumeID}/files/upload:
+    put:
+      summary: Upload file content
+      description: Stream file content to the volume. Creates parent directories as needed.
+      operationId: putVolumesVolumeIDFilesUpload
+      tags: [volumes]
+      security:
+        - ApiKeyAuth: []
+        - Supabase1TokenAuth: []
+          Supabase2TeamAuth: []
+      parameters:
+        - name: volumeID
+          in: path
+          required: true
+          description: Volume ID (vol_xxx)
+          schema:
+            type: string
+        - name: path
+          in: query
+          required: true
+          description: Destination path in volume
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "201":
+          description: File created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadResponse"
+        "401":
+          $ref: "#/components/responses/401"
+        "404":
+          $ref: "#/components/responses/404"
+        "500":
+          $ref: "#/components/responses/500"
+
+  /volumes/{volumeID}/files/download:
+    get:
+      summary: Download file content
+      description: Stream file content from the volume.
+      operationId: getVolumesVolumeIDFilesDownload
+      tags: [volumes]
+      security:
+        - ApiKeyAuth: []
+        - Supabase1TokenAuth: []
+          Supabase2TeamAuth: []
+      parameters:
+        - name: volumeID
+          in: path
+          required: true
+          description: Volume ID (vol_xxx)
+          schema:
+            type: string
+        - name: path
+          in: query
+          required: true
+          description: File path in volume
+          schema:
+            type: string
+      responses:
+        "200":
+          description: File content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
         "401":
           $ref: "#/components/responses/401"
         "404":

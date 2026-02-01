@@ -78,10 +78,6 @@ class VolumeInfo:
             name=data["name"],
             total_size_bytes=data.get("totalSizeBytes", 0),
             total_file_count=data.get("totalFileCount", 0),
-            created_at=datetime.fromisoformat(
-                data["createdAt"].replace("Z", "+00:00")
-            ),
-            updated_at=datetime.fromisoformat(
-                data["updatedAt"].replace("Z", "+00:00")
-            ),
+            created_at=datetime.fromisoformat(data["createdAt"].replace("Z", "+00:00")),
+            updated_at=datetime.fromisoformat(data["updatedAt"].replace("Z", "+00:00")),
         )

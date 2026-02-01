@@ -283,9 +283,7 @@ class VolumeApi:
         )
 
         if response.status_code == 404:
-            raise NotFoundException(
-                f"Volume '{volume_id}' or file '{path}' not found"
-            )
+            raise NotFoundException(f"Volume '{volume_id}' or file '{path}' not found")
 
         err = handle_api_exception(response)
         if err:
@@ -323,9 +321,7 @@ class VolumeApi:
         )
 
         if response.status_code == 404:
-            raise NotFoundException(
-                f"Volume '{volume_id}' or path '{path}' not found"
-            )
+            raise NotFoundException(f"Volume '{volume_id}' or path '{path}' not found")
 
         err = handle_api_exception(response)
         if err:

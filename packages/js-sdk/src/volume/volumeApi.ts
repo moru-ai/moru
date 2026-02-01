@@ -264,28 +264,41 @@ export class VolumeApi {
    *
    * @param volumeId Volume ID (vol_xxx).
    * @param path Destination path in volume.
-   * @param content File content as Buffer or ArrayBuffer.
+   * @param content File content as Buffer, ArrayBuffer, or ReadableStream.
    * @param opts Connection options.
    * @returns Size of uploaded file.
    */
   static async uploadFile(
     volumeId: string,
     path: string,
-    content: Buffer | ArrayBuffer,
+    content: Buffer | ArrayBuffer | ReadableStream<Uint8Array>,
     opts?: VolumeApiOpts
   ): Promise<number> {
     const config = new ConnectionConfig(opts)
     const url = `${config.apiUrl}/volumes/${encodeURIComponent(volumeId)}/files/upload?path=${encodeURIComponent(path)}`
 
+    // Prepare headers - for streams, we use chunked transfer encoding
+    const headers: Record<string, string> = {
+      ...config.headers,
+      'Content-Type': 'application/octet-stream',
+    }
+
+    // ReadableStream uses chunked transfer encoding (no Content-Length needed)
+    // Buffer and ArrayBuffer can include Content-Length for efficiency
+    if (content instanceof Buffer) {
+      headers['Content-Length'] = String(content.byteLength)
+    } else if (content instanceof ArrayBuffer) {
+      headers['Content-Length'] = String(content.byteLength)
+    }
+
     const response = await fetch(url, {
       method: 'PUT',
-      headers: {
-        ...config.headers,
-        'Content-Type': 'application/octet-stream',
-      },
+      headers,
       body: content,
       signal: config.getSignal(opts?.requestTimeoutMs),
-    })
+      // Enable streaming for ReadableStream - required for Node.js fetch
+      ...(content instanceof ReadableStream && { duplex: 'half' }),
+    } as RequestInit)
 
     if (response.status === 404) {
       throw new NotFoundError(`Volume '${volumeId}' not found`)
@@ -297,7 +310,18 @@ export class VolumeApi {
     }
 
     const data = await response.json() as { size?: number }
-    return data?.size ?? (content instanceof Buffer ? content.byteLength : content.byteLength)
+    // For ReadableStream, we can only know the size from the server response
+    if (data?.size !== undefined) {
+      return data.size
+    }
+    if (content instanceof Buffer) {
+      return content.byteLength
+    }
+    if (content instanceof ArrayBuffer) {
+      return content.byteLength
+    }
+    // For ReadableStream without server response, return 0
+    return 0
   }
 
   /**

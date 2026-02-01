@@ -6,10 +6,14 @@ from .aws_registry_type import AWSRegistryType
 from .build_log_entry import BuildLogEntry
 from .build_status_reason import BuildStatusReason
 from .connect_sandbox import ConnectSandbox
+from .create_volume_request import CreateVolumeRequest
 from .created_access_token import CreatedAccessToken
 from .created_team_api_key import CreatedTeamAPIKey
 from .disk_metrics import DiskMetrics
 from .error import Error
+from .file_info import FileInfo
+from .file_info_type import FileInfoType
+from .file_list_response import FileListResponse
 from .gcp_registry import GCPRegistry
 from .gcp_registry_type import GCPRegistryType
 from .general_registry import GeneralRegistry
@@ -69,6 +73,8 @@ from .template_step import TemplateStep
 from .template_update_request import TemplateUpdateRequest
 from .template_with_builds import TemplateWithBuilds
 from .update_team_api_key import UpdateTeamAPIKey
+from .upload_response import UploadResponse
+from .volume import Volume
 
 __all__ = (
     "AdminSandboxKillResult",
@@ -79,8 +85,12 @@ __all__ = (
     "ConnectSandbox",
     "CreatedAccessToken",
     "CreatedTeamAPIKey",
+    "CreateVolumeRequest",
     "DiskMetrics",
     "Error",
+    "FileInfo",
+    "FileInfoType",
+    "FileListResponse",
     "GCPRegistry",
     "GCPRegistryType",
     "GeneralRegistry",
@@ -138,4 +148,6 @@ __all__ = (
     "TemplateUpdateRequest",
     "TemplateWithBuilds",
     "UpdateTeamAPIKey",
+    "UploadResponse",
+    "Volume",
 )
