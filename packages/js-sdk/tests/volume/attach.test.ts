@@ -175,3 +175,151 @@ test('sandbox volume invalid mount path throws', async () => {
     await vol.delete()
   }
 })
+
+test.skipIf(isDebug)('sandbox volume python file persistence', async () => {
+  const name = uniqueVolumeName()
+  const vol = await Volume.create({ name })
+  const testContent = `python-content-${randomUUID().slice(0, 8)}`
+
+  try {
+    // Create first sandbox and write with Python
+    const sbx1 = await Sandbox.create(template, {
+      volumeId: vol.volumeId,
+      volumeMountPath: '/workspace/data',
+      timeoutMs: 60_000,
+    })
+
+    try {
+      const mountReady1 = await waitForMount(sbx1, '/workspace/data')
+      assert.isTrue(mountReady1, 'Volume mount did not become ready in time')
+
+      // Fix permissions and write with Python
+      await sbx1.commands.run('sudo chown -R user:user /workspace/data/')
+      await sbx1.commands.run(
+        `python3 -c "open('/workspace/data/pyfile.txt', 'w').write('${testContent}')"`
+      )
+    } finally {
+      await sbx1.kill()
+    }
+
+    // Create second sandbox and verify
+    const sbx2 = await Sandbox.create(template, {
+      volumeId: vol.volumeId,
+      volumeMountPath: '/workspace/data',
+      timeoutMs: 60_000,
+    })
+
+    try {
+      const mountReady2 = await waitForMount(sbx2, '/workspace/data')
+      assert.isTrue(mountReady2, 'Volume mount did not become ready in time')
+
+      const result = await sbx2.commands.run('cat /workspace/data/pyfile.txt')
+      assert.equal(result.exitCode, 0)
+      assert.include(result.stdout, testContent)
+    } finally {
+      await sbx2.kill()
+    }
+  } finally {
+    await vol.delete()
+  }
+})
+
+test.skipIf(isDebug)('sandbox volume nested directory persistence', async () => {
+  const name = uniqueVolumeName()
+  const vol = await Volume.create({ name })
+  const testContent = `nested-${randomUUID().slice(0, 8)}`
+
+  try {
+    // Create first sandbox and write nested file
+    const sbx1 = await Sandbox.create(template, {
+      volumeId: vol.volumeId,
+      volumeMountPath: '/workspace/data',
+      timeoutMs: 60_000,
+    })
+
+    try {
+      const mountReady1 = await waitForMount(sbx1, '/workspace/data')
+      assert.isTrue(mountReady1, 'Volume mount did not become ready in time')
+
+      await sbx1.commands.run('sudo chown -R user:user /workspace/data/')
+      await sbx1.commands.run('mkdir -p /workspace/data/deep/nested/dir')
+      await sbx1.commands.run(
+        `echo '${testContent}' > /workspace/data/deep/nested/dir/file.txt`
+      )
+    } finally {
+      await sbx1.kill()
+    }
+
+    // Create second sandbox and verify
+    const sbx2 = await Sandbox.create(template, {
+      volumeId: vol.volumeId,
+      volumeMountPath: '/workspace/data',
+      timeoutMs: 60_000,
+    })
+
+    try {
+      const mountReady2 = await waitForMount(sbx2, '/workspace/data')
+      assert.isTrue(mountReady2, 'Volume mount did not become ready in time')
+
+      const result = await sbx2.commands.run(
+        'cat /workspace/data/deep/nested/dir/file.txt'
+      )
+      assert.equal(result.exitCode, 0)
+      assert.include(result.stdout, testContent)
+    } finally {
+      await sbx2.kill()
+    }
+  } finally {
+    await vol.delete()
+  }
+})
+
+test.skipIf(isDebug)('sandbox volume binary file persistence', async () => {
+  const name = uniqueVolumeName()
+  const vol = await Volume.create({ name })
+
+  try {
+    // Create first sandbox and write binary file
+    const sbx1 = await Sandbox.create(template, {
+      volumeId: vol.volumeId,
+      volumeMountPath: '/workspace/data',
+      timeoutMs: 60_000,
+    })
+
+    let originalMd5 = ''
+    try {
+      const mountReady1 = await waitForMount(sbx1, '/workspace/data')
+      assert.isTrue(mountReady1, 'Volume mount did not become ready in time')
+
+      await sbx1.commands.run('sudo chown -R user:user /workspace/data/')
+      // Write 512KB random binary file
+      await sbx1.commands.run(
+        'dd if=/dev/urandom of=/workspace/data/random.bin bs=1024 count=512 2>/dev/null'
+      )
+      const md5Result = await sbx1.commands.run('md5sum /workspace/data/random.bin')
+      originalMd5 = md5Result.stdout.split(' ')[0]
+    } finally {
+      await sbx1.kill()
+    }
+
+    // Create second sandbox and verify integrity
+    const sbx2 = await Sandbox.create(template, {
+      volumeId: vol.volumeId,
+      volumeMountPath: '/workspace/data',
+      timeoutMs: 60_000,
+    })
+
+    try {
+      const mountReady2 = await waitForMount(sbx2, '/workspace/data')
+      assert.isTrue(mountReady2, 'Volume mount did not become ready in time')
+
+      const md5Result = await sbx2.commands.run('md5sum /workspace/data/random.bin')
+      const restoredMd5 = md5Result.stdout.split(' ')[0]
+      assert.equal(restoredMd5, originalMd5, 'Binary file MD5 mismatch after restore')
+    } finally {
+      await sbx2.kill()
+    }
+  } finally {
+    await vol.delete()
+  }
+})
