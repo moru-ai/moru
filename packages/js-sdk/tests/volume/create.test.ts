@@ -13,7 +13,7 @@ test.skipIf(isDebug)('create volume', async () => {
   const vol = await Volume.create({ name })
 
   try {
-    assert.isTrue(vol.volumeId.startsWith('vol_'))
+    assert.isTrue(vol.volumeId.startsWith('vol-'))
     assert.equal(vol.name, name)
     assert.isAtLeast(vol.totalSizeBytes, 0)
     assert.isAtLeast(vol.totalFileCount, 0)
