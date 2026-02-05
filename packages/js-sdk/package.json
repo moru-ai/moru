@@ -1,6 +1,6 @@
 {
   "name": "@moru-ai/core",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Moru SDK that gives agents cloud environments",
   "homepage": "https://github.com/moru-ai/moru",
   "license": "MIT",
