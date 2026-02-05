@@ -2,6 +2,11 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Skip tests and publish directly (use for emergency releases)'
+        type: boolean
+        default: false
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -117,21 +122,21 @@ jobs:
   python-tests:
     name: Python SDK Tests
     needs: [changes]
-    if: needs.changes.outputs.python-sdk == 'true'
+    if: needs.changes.outputs.python-sdk == 'true' && inputs.skip_tests != true
     uses: ./.github/workflows/python_sdk_tests.yml
     secrets: inherit
 
   js-tests:
     name: JS SDK Tests
     needs: [changes]
-    if: needs.changes.outputs.js-sdk == 'true'
+    if: needs.changes.outputs.js-sdk == 'true' && inputs.skip_tests != true
     uses: ./.github/workflows/js_sdk_tests.yml
     secrets: inherit
 
   cli-tests:
     name: CLI Tests
     needs: [changes]
-    if: needs.changes.outputs.cli == 'true'
+    if: needs.changes.outputs.cli == 'true' && inputs.skip_tests != true
     uses: ./.github/workflows/cli_tests.yml
     secrets: inherit
 
