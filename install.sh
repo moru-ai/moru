@@ -260,10 +260,19 @@ echo ""
 # Step 1: Fetch version
 start_spinner "Fetching latest version..."
 if [[ -z "$VERSION" ]]; then
-    VERSION="$(curl -fsSL "https://api.github.com/repos/${REPO}/releases/latest" \
+    # Note: Cannot use /releases/latest because this monorepo publishes
+    # releases for multiple packages (@moru-ai/cli, @moru-ai/core, moru).
+    # /releases/latest returns whichever was published most recently,
+    # which may not be a CLI release. Instead, list recent releases and
+    # find the first one tagged for @moru-ai/cli.
+    VERSION="$(curl -fsSL "https://api.github.com/repos/${REPO}/releases?per_page=20" \
         | grep -E '"tag_name":' \
+        | grep '@moru-ai/cli@' \
         | head -n 1 \
         | sed -E 's/.*"([^"]+)".*/\1/')"
+    if [[ -z "$VERSION" ]]; then
+        print_error "Could not find a CLI release. Check https://github.com/${REPO}/releases"
+    fi
 fi
 
 TAG="${VERSION}"
